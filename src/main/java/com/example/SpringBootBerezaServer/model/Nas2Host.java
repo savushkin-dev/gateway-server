@@ -19,6 +19,9 @@ public class Nas2Host {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "F_ID")
+    private int F_ID;
+
     @Column(name = "MSGID")
     private String MSGID;
 

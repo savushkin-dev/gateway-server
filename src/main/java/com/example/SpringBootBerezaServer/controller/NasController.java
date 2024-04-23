@@ -22,7 +22,7 @@ public class NasController {
 
     private final String tokenNas = "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1bmlxdWVfbmFtZSI6IlNhdnVzaGtpbiIsIm5iZiI6MTcxMTcwNDE0MCwiZXhwIjozMjg5NTQ0NTQwLCJpYXQiOjE3MTE3MDc3NDAsImlzcyI6IkFQUyBkLm8uby4ifQ.8XkzdsBawFhAYrZ8FWVo0QbHmY6pgktvuPf7B_Rq-iI";
 
-    private final String tokenTest = "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJVc2VyIGRldGFpbHMiLCJ1c2VybmFtZSI6Im5hcyIsImlhdCI6MTcxMTk1MzkzNCwiaXNzIjoiU3ByaW5nLWFwcCIsImV4cCI6MTc0MzQ4OTkzNH0.5YNa9siSVg8wUgFT95NwdIqVLjpgXvLbx9j7YW96ISI";
+    private final String tokenTest = "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJVc2VyIGRldGFpbHMiLCJ1c2VybmFtZSI6InNhdnVzaGtpbiIsImlhdCI6MTcxMzg3MjkzOCwiaXNzIjoiU3ByaW5nLUJlcmV6YS1TZXJ2ZXIiLCJleHAiOjE3NDU0MDg5Mzh9.maKaKK9maP2eUfSt0nXZlWAOBQOcLeb2lBj_5zHBl3I";
 
     @Autowired
     private final RestTemplate restTemplate;
@@ -103,7 +103,7 @@ public class NasController {
             throw new NasRemoteServerException("Exception when requesting to remote server!");
         }
 
-        System.out.println(nas2HostService.findAll());
+
 
         writeLog(requestXML, response.getBody());
 

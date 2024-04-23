@@ -14,8 +14,6 @@ public class UserDTO {
     @Size(min = 2, max = 100, message = "Должно быть в диапазоне от 2 до 100 символов")
     private String username;
 
-    @Email
-    private String email;
 
     private String password;
 
