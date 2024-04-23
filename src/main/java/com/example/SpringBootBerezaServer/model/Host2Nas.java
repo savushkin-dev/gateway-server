@@ -1,10 +1,7 @@
 package com.example.SpringBootBerezaServer.model;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
 import java.time.LocalDateTime;
 
@@ -12,12 +9,16 @@ import java.time.LocalDateTime;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
+@ToString
 @Entity
 @Table(name = "BD_H2N")
 public class Host2Nas {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "F_ID")
+    private int F_ID;
+
     @Column(name = "MSGID")
     private String MSGID;
 
@@ -66,4 +67,14 @@ public class Host2Nas {
     @Column(name = "USERID")
     private String USERID;
 
+    public Host2Nas(String MSGID, String MSGTYPE, String REPLYTO, LocalDateTime TIMESTAMP, String FACILITY, String ACTION, String SENDER, String RECEIVER) {
+        this.MSGID = MSGID;
+        this.MSGTYPE = MSGTYPE;
+        this.REPLYTO = REPLYTO;
+        this.TIMESTAMP = TIMESTAMP;
+        this.FACILITY = FACILITY;
+        this.ACTION = ACTION;
+        this.SENDER = SENDER;
+        this.RECEIVER = RECEIVER;
+    }
 }

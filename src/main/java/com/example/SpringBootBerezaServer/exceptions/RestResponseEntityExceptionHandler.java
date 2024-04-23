@@ -13,6 +13,7 @@ import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 
@@ -72,13 +73,11 @@ public class RestResponseEntityExceptionHandler extends ResponseEntityExceptionH
 //        return ResponseEntity.status(HttpStatus.BAD_REQUEST).contentType(MediaType.APPLICATION_XML).body(response);
     }
 
-
     @ExceptionHandler({XMLParsingException.class})
     public ResponseEntity<AppError> handleXMLParsingException(Exception ex, WebRequest request) {
 
         AppError response = new AppError("XMLParsingException; " + ex.getMessage());
-        return new ResponseEntity<AppError>(
-                response, HttpStatus.BAD_REQUEST);
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).contentType(MediaType.APPLICATION_XML).body(response);
     }
 
 

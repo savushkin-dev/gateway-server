@@ -24,7 +24,7 @@ public class JWTUtil {
                 .withSubject("User details")
                 .withClaim("username", username)  //пары ключ значение
                 .withIssuedAt(new Date()) //когда выдан токен
-                .withIssuer("Spring-app") //кто выдал токен, обычно название приложения
+                .withIssuer("Spring-Bereza-Server") //кто выдал токен, обычно название приложения
                 .withExpiresAt(expirationDate) // срок годности
                 .sign(Algorithm.HMAC256(secret)); //секретная строка
     }
@@ -32,7 +32,7 @@ public class JWTUtil {
     public String validateTokenAndRetrieveClaim(String token) throws JWTVerificationException {
         JWTVerifier verifier = JWT.require(Algorithm.HMAC256(secret))
                 .withSubject("User details")
-                .withIssuer("Spring-app")
+                .withIssuer("Spring-Bereza-Server")
                 .build();
         DecodedJWT jwt = verifier.verify(token);
 

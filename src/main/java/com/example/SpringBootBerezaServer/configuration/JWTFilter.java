@@ -71,14 +71,6 @@ public class JWTFilter extends OncePerRequestFilter {
                     if (SecurityContextHolder.getContext().getAuthentication() == null) {
                         SecurityContextHolder.getContext().setAuthentication(authToken);
 
-                        try { //обновление последней авторизации
-                            UserOrgDetails userOrgDetails = (UserOrgDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-                            User user = userOrgDetails.getPerson();
-                            user.setLastLogin(LocalDateTime.now());
-                            usersRepository.save(user);
-                        } catch (Exception e){
-                            throw new UserNotUpdatedException("Failed to update last login date;" + e.getMessage());
-                        }
 
                     }
 

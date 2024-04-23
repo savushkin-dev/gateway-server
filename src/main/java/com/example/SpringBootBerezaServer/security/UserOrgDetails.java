@@ -22,12 +22,12 @@ public class UserOrgDetails implements UserDetails {
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        return Collections.singletonList(new SimpleGrantedAuthority(user.getRole()));
+        return null;
     }
 
     @Override
     public String getPassword() {
-        return this.user.getPassword();
+        return this.user.getPassword().trim();
     }
 
     @Override
