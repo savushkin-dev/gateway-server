@@ -51,6 +51,8 @@ public class SecurityConfig {
                 .authorizeHttpRequests(auth -> auth
                                 .requestMatchers(HttpMethod.POST, "api/authentication/authenticate").permitAll()
 //                                .requestMatchers(HttpMethod.POST, "api/authentication/registration").permitAll()
+//                                .requestMatchers(HttpMethod.POST, "api/hosttohost").permitAll()
+//                                .requestMatchers(HttpMethod.POST, "api/hosttonasTest").permitAll()
 //                                .requestMatchers("/test/**").permitAll()
 
                                 .anyRequest().authenticated()
