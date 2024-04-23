@@ -2,6 +2,7 @@ package com.example.SpringBootBerezaServer.controller;
 
 import com.example.SpringBootBerezaServer.exceptions.NAS.NasRemoteServerException;
 import com.example.SpringBootBerezaServer.model.xml.Response;
+import com.example.SpringBootBerezaServer.service.Nas2HostService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.*;
 import org.springframework.web.bind.annotation.*;
@@ -26,8 +27,12 @@ public class NasController {
     @Autowired
     private final RestTemplate restTemplate;
 
-    public NasController(RestTemplate restTemplate) {
+    @Autowired
+    private final Nas2HostService nas2HostService;
+
+    public NasController(RestTemplate restTemplate, Nas2HostService nas2HostService) {
         this.restTemplate = restTemplate;
+        this.nas2HostService = nas2HostService;
     }
 
     @PostMapping(value = "/nastohost", produces = MediaType.APPLICATION_XML_VALUE)
@@ -97,6 +102,8 @@ public class NasController {
             writeLog(requestXML, e.getMessage());
             throw new NasRemoteServerException("Exception when requesting to remote server!");
         }
+
+        System.out.println(nas2HostService.findAll());
 
         writeLog(requestXML, response.getBody());
 
