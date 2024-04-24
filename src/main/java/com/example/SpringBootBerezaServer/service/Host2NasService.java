@@ -29,8 +29,8 @@ import java.util.List;
 @Transactional(readOnly = true)
 public class Host2NasService {
 
-    //    private static final String FILE_PATH="/srv/logHost2NAS";
-    private static final String FILE_PATH="logHost2NAS";
+        private static final String FILE_PATH="/srv/logHost2NAS";
+//    private static final String FILE_PATH="logHost2NAS";
 
     private final String NAS_URL = "http://192.168.10.205:8082/api/hosttonas";
 
