@@ -121,8 +121,8 @@ public class Host2NasService {
         ResponseEntity<String> response = null;
         try {
             response = restTemplate
-                    .exchange("http://localhost:7592/api/hosttonasTest",
-//                    .exchange("http://10.35.0.4:7592/api/hosttonasTest",
+//                    .exchange("http://localhost:7592/api/hosttonasTest",
+                    .exchange("http://10.35.0.4:7592/api/hosttonasTest",
                             HttpMethod.POST, request, String.class);
         } catch (Exception e) {
             writeLogH2N(requestXML, response.getBody(), e.getMessage());
