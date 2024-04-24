@@ -29,8 +29,8 @@ import java.util.List;
 @Transactional(readOnly = true)
 public class Host2NasService {
 
-        private static final String FILE_PATH="/srv/logHost2NAS";
-//    private static final String FILE_PATH="logHost2NAS";
+            private static final String FILE_PATH="/srv/logHost2NAS";
+//    private static final String FILE_PATH = "logHost2NAS";
 
     private final String NAS_URL = "http://192.168.10.205:8082/api/hosttonas";
 
@@ -56,12 +56,12 @@ public class Host2NasService {
     }
 
     @Transactional
-    public void save(Host2Nas message){
+    public void save(Host2Nas message) {
         host2NasRepository.save(message);
     }
 
     @Transactional
-    public String SendAndSave(String requestXML){
+    public String SendAndSave(String requestXML) {
         Host2Nas request = parsingXML(requestXML);
         String responseXML = sendToNasAndWriteLog(requestXML);
         Host2Nas response = parsingXML(responseXML);
@@ -73,7 +73,7 @@ public class Host2NasService {
     }
 
     @Transactional
-    public String SendAndSaveTEST(String requestXML){
+    public String SendAndSaveTEST(String requestXML) {
         Host2Nas request = parsingXML(requestXML);
         String responseXML = sendToNasAndWriteLogTEST(requestXML);
         Host2Nas response = parsingXML(responseXML);
@@ -84,7 +84,7 @@ public class Host2NasService {
         return responseXML;
     }
 
-    private String sendToNasAndWriteLog(String requestXML){
+    private String sendToNasAndWriteLog(String requestXML) {
 
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_XML);
@@ -93,22 +93,23 @@ public class Host2NasService {
 
         HttpEntity<String> request = new HttpEntity<>(requestXML, headers);
 
+        String responseXML = "-";
 
         ResponseEntity<String> response = null;
         try {
             response = restTemplate.postForEntity(NAS_URL,
                     request, String.class);
-        } catch (Exception e) {
-            writeLogH2N(requestXML, response.getBody(), e.getMessage());
+            responseXML = response.getBody();
+        }  catch (Exception e) {
+            writeLogH2N(requestXML, responseXML, e.getMessage());
             throw new NasRemoteServerException("Exception when requesting to remote server!");
         }
 
 
-
-        return response.getBody();
+        return responseXML;
     }
 
-    private String sendToNasAndWriteLogTEST(String requestXML){
+    private String sendToNasAndWriteLogTEST(String requestXML) {
 
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_XML);
@@ -117,6 +118,7 @@ public class Host2NasService {
 
         HttpEntity<String> request = new HttpEntity<>(requestXML, headers);
 
+        String responseXML = "-";
 
         ResponseEntity<String> response = null;
         try {
@@ -124,17 +126,18 @@ public class Host2NasService {
 //                    .exchange("http://localhost:7592/api/hosttonasTest",
                     .exchange("http://10.35.0.4:7592/api/hosttonasTest",
                             HttpMethod.POST, request, String.class);
+            responseXML = response.getBody();
         } catch (Exception e) {
-            writeLogH2N(requestXML, response.getBody(), e.getMessage());
+            writeLogH2N(requestXML, responseXML, e.getMessage());
             throw new NasRemoteServerException("Exception when requesting to remote server!");
         }
 
 
-        return response.getBody();
+        return responseXML;
     }
 
 
-    public Host2Nas parsingXML(String xml){
+    public Host2Nas parsingXML(String xml) {
         //StAX парсер
         String MSGID = "", MSGTYPE = "", REPLYTO = "", TIMESTAMP = "", FACILITY = "", ACTION = "", SENDER = "", RECEIVER = "";
 
@@ -169,27 +172,27 @@ public class Host2NasService {
                 }
             }
 
-            if(MSGID.isEmpty() || MSGTYPE.isEmpty() || TIMESTAMP.isEmpty() || ACTION.isEmpty() ){
-                writeLogH2N(xml, "-","XMLParsingException - Required fields are not filled in!");
+            if (MSGID.isEmpty() || MSGTYPE.isEmpty() || TIMESTAMP.isEmpty() || ACTION.isEmpty()) {
+                writeLogH2N(xml, "-", "XMLParsingException - Required fields are not filled in!");
                 throw new XMLParsingException("Required fields are not filled in!");
             }
 
-            Host2Nas host2Nas = new Host2Nas(MSGID,MSGTYPE,REPLYTO, LocalDateTime.parse(TIMESTAMP,
-                    Host2NasService.DATE_FORMAT) ,FACILITY,ACTION,SENDER,RECEIVER);
+            Host2Nas host2Nas = new Host2Nas(MSGID, MSGTYPE, REPLYTO, LocalDateTime.parse(TIMESTAMP,
+                    Host2NasService.DATE_FORMAT), FACILITY, ACTION, SENDER, RECEIVER);
             host2Nas.setDATA(xml);
 
 //            System.out.println(host2Nas);
             return host2Nas;
 
         } catch (XMLStreamException e) {
-            writeLogH2N(xml, "-","XMLParsingException - " + e.getMessage());
+            writeLogH2N(xml, "-", "XMLParsingException - " + e.getMessage());
             throw new XMLParsingException(e.getMessage());
         }
 
 
     }
 
-    public Host2Nas parsingNAS(String xml){
+    public Host2Nas parsingNAS(String xml) {
         //StAX парсер
         String MSGID = "", MSGTYPE = "", REPLYTO = "", TIMESTAMP = "", FACILITY = "", ACTION = "", SENDER = "", RECEIVER = "";
 
@@ -224,20 +227,20 @@ public class Host2NasService {
                 }
             }
 
-            if(MSGID.isEmpty() || MSGTYPE.isEmpty() || TIMESTAMP.isEmpty() || ACTION.isEmpty() ){
-                writeLogH2N(xml, "-","XMLParsingException - Required fields are not filled in!");
+            if (MSGID.isEmpty() || MSGTYPE.isEmpty() || TIMESTAMP.isEmpty() || ACTION.isEmpty()) {
+                writeLogH2N(xml, "-", "XMLParsingException - Required fields are not filled in!");
                 throw new XMLParsingException("Required fields are not filled in!");
             }
 
-            Host2Nas host2Nas = new Host2Nas(MSGID,MSGTYPE,REPLYTO, LocalDateTime.parse(TIMESTAMP,
-                    Host2NasService.DATE_FORMAT) ,FACILITY,ACTION,SENDER,RECEIVER);
+            Host2Nas host2Nas = new Host2Nas(MSGID, MSGTYPE, REPLYTO, LocalDateTime.parse(TIMESTAMP,
+                    Host2NasService.DATE_FORMAT), FACILITY, ACTION, SENDER, RECEIVER);
             host2Nas.setDATA(xml);
 
 //            System.out.println(host2Nas);
             return host2Nas;
 
         } catch (XMLStreamException e) {
-            writeLogH2N(xml, "-","XMLParsingException - " + e.getMessage());
+            writeLogH2N(xml, "-", "XMLParsingException - " + e.getMessage());
             throw new XMLParsingException(e.getMessage());
         }
 

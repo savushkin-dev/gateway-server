@@ -42,21 +42,21 @@ public class NasController {
     @PostMapping(value = "/hosttonasTest", produces = MediaType.APPLICATION_XML_VALUE)
     public ResponseEntity<?> hosttonasTest(@RequestBody String str) {
 
-//        String body = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" +
-//                "<MESSAGE>\n" +
-//                "  <MSGID>1</MSGID>\n" +
-//                "  <MSGTYPE>SYSSTAT</MSGTYPE>\n" +
-//                "  <REPLYTO></REPLYTO>\n" +
-//                "  <TIMESTAMP>2024-03-29 11:30:00</TIMESTAMP>\n" +
-//                "  <FACILITY></FACILITY>\n" +
-//                "  <ACTION>SET</ACTION>\n" +
-//                "  <SENDER></SENDER>\n" +
-//                "  <RECIEVER></RECIEVER>\n" +
-//                "  <SYSSTAT>\n" +
-//                "    <ERROR_CODE>0</ERROR_CODE>\n" +
-//                "    <DESCRIPTION>Ok</DESCRIPTION>\n" +
-//                "  </SYSSTAT>\n" +
-//                "</MESSAGE>";
+        String body = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" +
+                "<MESSAGE>\n" +
+                "  <MSGID>1</MSGID>\n" +
+                "  <MSGTYPE>SYSSTAT</MSGTYPE>\n" +
+                "  <REPLYTO></REPLYTO>\n" +
+                "  <TIMESTAMP>2024-03-29 11:30:00</TIMESTAMP>\n" +
+                "  <FACILITY></FACILITY>\n" +
+                "  <ACTION>SET</ACTION>\n" +
+                "  <SENDER></SENDER>\n" +
+                "  <RECIEVER></RECIEVER>\n" +
+                "  <SYSSTAT>\n" +
+                "    <ERROR_CODE>0</ERROR_CODE>\n" +
+                "    <DESCRIPTION>Ok</DESCRIPTION>\n" +
+                "  </SYSSTAT>\n" +
+                "</MESSAGE>";
 
         return ResponseEntity.ok(str);
     }

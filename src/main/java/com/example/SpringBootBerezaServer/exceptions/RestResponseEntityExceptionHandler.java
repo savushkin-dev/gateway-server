@@ -96,4 +96,18 @@ public class RestResponseEntityExceptionHandler extends ResponseEntityExceptionH
         Sysstat response = new Sysstat(HttpStatus.BAD_REQUEST.value(), "NasRemoteServerException: " + ex.getMessage());
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).contentType(MediaType.APPLICATION_XML).body(response);
     }
+
+//    @ExceptionHandler({Exception.class}) //отвечает за авторизацию
+//    public ResponseEntity<AppError> handleException(Exception ex, HttpServletRequest request, HttpServletResponse response) {
+//
+//        System.out.println("Handler response!");
+//
+//        AppError error = new AppError(ex.getMessage());
+//        if (response.getHeader("error") != null)
+//            error.setMessage(response.getHeader("error"));
+//
+//        return ResponseEntity.status(response.getStatus())
+//                .contentType(MediaType.parseMediaType(response.getContentType()))
+//                .body(error);
+//    }
 }
