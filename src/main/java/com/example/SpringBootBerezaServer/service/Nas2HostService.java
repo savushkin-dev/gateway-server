@@ -23,8 +23,8 @@ import java.util.List;
 @Transactional(readOnly = true)
 public class Nas2HostService {
 
-//    private static final String FILE_PATH="/srv/logNAS2Host";
-    private static final String FILE_PATH="logNAS2Host";
+    private static final String FILE_PATH="/srv/logNAS2Host";
+//    private static final String FILE_PATH="logNAS2Host";
 
     private final Nas2HostRepository nas2HostRepository;
 
