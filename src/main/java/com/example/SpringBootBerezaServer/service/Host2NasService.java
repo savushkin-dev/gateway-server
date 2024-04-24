@@ -64,7 +64,8 @@ public class Host2NasService {
     public String SendAndSave(String requestXML) {
         Host2Nas request = parsingXML(requestXML);
         String responseXML = sendToNasAndWriteLog(requestXML);
-        Host2Nas response = parsingXML(responseXML);
+//        Host2Nas response = parsingXML(responseXML);
+        Host2Nas response = request;
 
         save(request);
         save(response);
