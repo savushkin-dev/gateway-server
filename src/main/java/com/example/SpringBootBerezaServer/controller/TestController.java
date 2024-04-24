@@ -28,7 +28,6 @@ public class TestController {
     @GetMapping()
     public ResponseEntity<?> test() {
 
-        host2NasService.ParseAndSave("sd");
 
         return ResponseEntity.ok("test!");
     }

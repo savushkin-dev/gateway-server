@@ -70,5 +70,14 @@ public class Nas2Host {
     @Column(name = "USERID")
     private String USERID;
 
-
+    public Nas2Host(String MSGID, String MSGTYPE, String REPLYTO, LocalDateTime TIMESTAMP, String FACILITY, String ACTION, String SENDER, String RECEIVER) {
+        this.MSGID = MSGID;
+        this.MSGTYPE = MSGTYPE;
+        this.REPLYTO = REPLYTO;
+        this.TIMESTAMP = TIMESTAMP;
+        this.FACILITY = FACILITY;
+        this.ACTION = ACTION;
+        this.SENDER = SENDER;
+        this.RECEIVER = RECEIVER;
+    }
 }

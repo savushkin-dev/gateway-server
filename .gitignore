@@ -34,3 +34,4 @@ build/
 .vscode/
 
 /logHost2NAS
+/logNAS2Host

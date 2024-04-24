@@ -1,113 +1,39 @@
 package com.example.SpringBootBerezaServer.controller;
 
-import com.example.SpringBootBerezaServer.exceptions.NAS.NasRemoteServerException;
-import com.example.SpringBootBerezaServer.model.xml.Response;
+import com.example.SpringBootBerezaServer.model.Sysstat;
+import com.example.SpringBootBerezaServer.service.Host2NasService;
 import com.example.SpringBootBerezaServer.service.Nas2HostService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.*;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.client.RestTemplate;
-
-import java.io.BufferedWriter;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.time.LocalDateTime;
 
 @RestController
 @RequestMapping("/api")
 public class NasController {
 
-
-    private final String NAS_URL = "http://192.168.10.205:8082/api/hosttonas";
-
-    private final String tokenNas = "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1bmlxdWVfbmFtZSI6IlNhdnVzaGtpbiIsIm5iZiI6MTcxMTcwNDE0MCwiZXhwIjozMjg5NTQ0NTQwLCJpYXQiOjE3MTE3MDc3NDAsImlzcyI6IkFQUyBkLm8uby4ifQ.8XkzdsBawFhAYrZ8FWVo0QbHmY6pgktvuPf7B_Rq-iI";
-
-    private final String tokenTest = "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJVc2VyIGRldGFpbHMiLCJ1c2VybmFtZSI6InNhdnVzaGtpbiIsImlhdCI6MTcxMzg3MjkzOCwiaXNzIjoiU3ByaW5nLUJlcmV6YS1TZXJ2ZXIiLCJleHAiOjE3NDU0MDg5Mzh9.maKaKK9maP2eUfSt0nXZlWAOBQOcLeb2lBj_5zHBl3I";
-
-    @Autowired
-    private final RestTemplate restTemplate;
-
-    @Autowired
     private final Nas2HostService nas2HostService;
+    private final Host2NasService host2NasService;
 
-    public NasController(RestTemplate restTemplate, Nas2HostService nas2HostService) {
-        this.restTemplate = restTemplate;
+    @Autowired
+    public NasController(Nas2HostService nas2HostService, Host2NasService host2NasService) {
         this.nas2HostService = nas2HostService;
+        this.host2NasService = host2NasService;
     }
 
     @PostMapping(value = "/nastohost", produces = MediaType.APPLICATION_XML_VALUE)
-    public Response nastohost(@RequestBody String str) {
-
-//        System.out.println(str);
-
-        BufferedWriter writer = null;
-        try {
-//            writer = new BufferedWriter(new FileWriter("logNAS2Host", true));
-            writer = new BufferedWriter(new FileWriter("/srv/logNAS2Host", true));
-            writer.write("Message date - " + LocalDateTime.now() + "\n\n");
-            writer.write(str + "\n");
-            writer.write("============================================================================");
-            writer.write(System.lineSeparator());
-            writer.close();
-        } catch (IOException e) {
-            throw new RuntimeException();
-        }
-
-        return new Response("Request processed successfully!");
+    public Sysstat nastohost(@RequestBody String requestXML) {
+        nas2HostService.saveResponse(requestXML);
+        return new Sysstat(0,"OK");
     }
 
     @PostMapping(value = "/hosttonas", produces = MediaType.APPLICATION_XML_VALUE)
     public ResponseEntity<?> hosttonas(@RequestBody String requestXML) {
-
-        HttpHeaders headers = new HttpHeaders();
-        headers.setContentType(MediaType.APPLICATION_XML);
-
-        headers.add("Authorization", tokenNas);
-
-        HttpEntity<String> request = new HttpEntity<>(requestXML, headers);
-
-
-        ResponseEntity<String> response = null;
-        try {
-            response = restTemplate.postForEntity(NAS_URL,
-                    request, String.class);
-        } catch (Exception e) {
-            writeLog(requestXML, e.getMessage());
-            throw new NasRemoteServerException("Exception when requesting to remote server!");
-        }
-
-        writeLog(requestXML, response.getBody());
-
-        return ResponseEntity.ok(response.getBody());
+        return ResponseEntity.ok(host2NasService.SendAndSave(requestXML));
     }
 
     @PostMapping(value = "/hosttohost", produces = MediaType.APPLICATION_XML_VALUE)
     public ResponseEntity<?> hosttohost(@RequestBody String requestXML) {
-
-        HttpHeaders headers = new HttpHeaders();
-        headers.setContentType(MediaType.APPLICATION_XML);
-
-        headers.add("Authorization", tokenTest);
-
-        HttpEntity<String> request = new HttpEntity<>(requestXML, headers);
-
-
-        ResponseEntity<String> response = null;
-        try {
-            response = restTemplate
-                    .exchange("http://localhost:7592/api/hosttonasTest",
-//                    .exchange("http://10.35.0.4:7592/api/hosttonasTest",
-                            HttpMethod.POST, request, String.class);
-        } catch (Exception e) {
-            writeLog(requestXML, e.getMessage());
-            throw new NasRemoteServerException("Exception when requesting to remote server!");
-        }
-
-
-
-        writeLog(requestXML, response.getBody());
-
-        return ResponseEntity.ok(response.getBody());
+        return ResponseEntity.ok(host2NasService.SendAndSaveTEST(requestXML));
     }
 
 
@@ -115,8 +41,6 @@ public class NasController {
 //    @PostMapping(value = "/hosttonasTest")
     @PostMapping(value = "/hosttonasTest", produces = MediaType.APPLICATION_XML_VALUE)
     public ResponseEntity<?> hosttonasTest(@RequestBody String str) {
-
-//        System.out.println(request.getHeaders().get("Content-Type"));
 
 //        String body = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" +
 //                "<MESSAGE>\n" +
@@ -137,25 +61,44 @@ public class NasController {
         return ResponseEntity.ok(str);
     }
 
-
-    private static void writeLog(String request, String response) {
-        BufferedWriter writer = null;
-        try {
-            writer = new BufferedWriter(new FileWriter("logHost2NAS", true));
-//            writer = new BufferedWriter(new FileWriter("/srv/logHost2NAS", true));
-            writer.write("Message date - " + LocalDateTime.now() + "\n\n");
-            writer.write("Request:" + "\n");
-            writer.write(request + "\n\n");
-            writer.write("Response:" + "\n");
-            writer.write(response + "\n");
-            writer.write("============================================================================");
-            writer.write(System.lineSeparator());
-            writer.close();
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
-
-    }
-
+    private String xmlTest = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" +
+            "     <MESSAGE>\n" +
+            "       <MSGID>4</MSGID>\n" +
+            "       <MSGTYPE>ITEM</MSGTYPE>\n" +
+            "       <REPLYTO>t</REPLYTO>\n" +
+            "       <TIMESTAMP>2024-04-22 14:30:01</TIMESTAMP>\n" +
+            "       <FACILITY>test</FACILITY>\n" +
+            "       <ACTION>SET</ACTION>\n" +
+            "       <SENDER>HOST</SENDER>\n" +
+            "       <RECIEVER>NAS</RECIEVER>\n" +
+            "         <ITEM>\n" +
+            "           <ITEM_ID>0204210168</ITEM_ID>\n" +
+            "           <ITEM_REF>2402</ITEM_ID>\n" +
+            "           <SKU_UOM/>\n" +
+            "           <BASIC_UOM>PCE</BASIC_UOM>\n" +
+            "           <SKU_BASIC_QUANTITY/>\n" +
+            "           <NAME>Сырп/твБЛфин45%фас.н-бр.200г</NAME>\n" +
+            "           <EAN>4810268035258</EAN>\n" +
+            "           <CATEGORY>0201010000</CATEGORY>\n" +
+            "           <CATEGORY_NAME>Категории и сегменты</CATEGORY_NAME>\n" +
+            "           <NAS/>\n" +
+            "           <DESCRIPTION>Сыр полутвердый \"Брест-Литовск финский\" массовой долей жира в сухом веществе 45 % фасованный (нарезка-брусок) 200 г</DESCRIPTION>\n" +
+            "           <SPECIFICATION/>\n" +
+            "           <ACTIVE/>\n" +
+            "           <QUALITY_CONTROL/>\n" +
+            "           <NETTO_WEIGHT/>\n" +
+            "           <BRUTTO_WEIGHT>0.2</BRUTTO_WEIGHT>>\n" +
+            "           <VOLUME/>\n" +
+            "           <SHELF_LIFE/>\n" +
+            "           <FREQUENCY/>\n" +
+            "           <LOT/>\n" +
+            "           <BBDATE/>\n" +
+            "           <SERIAL/>\n" +
+            "           <WRAPPING/>\n" +
+            "           <LU_TYPE/>\n" +
+            "           <PACKINGS/>\n" +
+            "           <TEMPERATURE_REGIME/>\n" +
+            "         </ITEM>\n" +
+            "     </MESSAGE>\n";
 
 }

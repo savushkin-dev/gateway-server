@@ -3,6 +3,7 @@ package com.example.SpringBootBerezaServer.exceptions;
 import com.example.SpringBootBerezaServer.exceptions.NAS.NasException;
 import com.example.SpringBootBerezaServer.exceptions.NAS.NasRemoteServerException;
 import com.example.SpringBootBerezaServer.model.AppError;
+import com.example.SpringBootBerezaServer.model.Sysstat;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.http.HttpStatus;
@@ -74,9 +75,9 @@ public class RestResponseEntityExceptionHandler extends ResponseEntityExceptionH
     }
 
     @ExceptionHandler({XMLParsingException.class})
-    public ResponseEntity<AppError> handleXMLParsingException(Exception ex, WebRequest request) {
+    public ResponseEntity<Sysstat> handleXMLParsingException(Exception ex, WebRequest request) {
 
-        AppError response = new AppError("XMLParsingException; " + ex.getMessage());
+        Sysstat response = new Sysstat(HttpStatus.BAD_REQUEST.value(), "XMLParsingException: " + ex.getMessage());
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).contentType(MediaType.APPLICATION_XML).body(response);
     }
 
@@ -92,7 +93,7 @@ public class RestResponseEntityExceptionHandler extends ResponseEntityExceptionH
 
     @ExceptionHandler({NasRemoteServerException.class})
     public ResponseEntity<?> handleNasRemoteServerException(Exception ex, WebRequest request) {
-        AppError response = new AppError("NasRemoteServerException; " + ex.getMessage());
+        Sysstat response = new Sysstat(HttpStatus.BAD_REQUEST.value(), "NasRemoteServerException: " + ex.getMessage());
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).contentType(MediaType.APPLICATION_XML).body(response);
     }
 }
