@@ -14,10 +14,7 @@ public class TestController {
 
 
 
-    @Autowired
-    public TestController(Host2NasService host2NasService) {
-        this.host2NasService = host2NasService;
-    }
+
 
     @GetMapping()
     public ResponseEntity<?> test() {
