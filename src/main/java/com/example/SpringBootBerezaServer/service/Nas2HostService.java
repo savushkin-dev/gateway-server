@@ -84,7 +84,7 @@ public class Nas2HostService {
                 }
             }
 
-            if(MSGID.isEmpty() || MSGTYPE.isEmpty() || TIMESTAMP.isEmpty() || ACTION.isEmpty() || REPLYTO.isEmpty() ){
+            if(MSGID.isEmpty() || MSGTYPE.isEmpty() || TIMESTAMP.isEmpty() || ACTION.isEmpty() ){
                 writeLogN2H(xml, "XMLParsingException - Required fields are not filled in!");
                 throw new XMLParsingException("Required fields are not filled in!");
             }
