@@ -72,7 +72,7 @@ public class Host2NasService {
 //            save(request);
 //            save(response);
             writeLogH2N(requestXML, responseXML);
-            return responseXML + " null";
+            return responseXML;
         } catch (Exception ex) {
             writeLogH2N(requestXML, responseXML, ex.getMessage());
             throw ex;
