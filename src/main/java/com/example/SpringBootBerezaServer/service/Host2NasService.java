@@ -70,7 +70,7 @@ public class Host2NasService {
     @Transactional
     public String SendAndSaveTEST(String xml){
         Host2Nas host2Nas = parsingXML(xml);
-//        save(host2Nas);
+        save(host2Nas);
         return sendToNasAndWriteLogTEST(xml);
     }
 
