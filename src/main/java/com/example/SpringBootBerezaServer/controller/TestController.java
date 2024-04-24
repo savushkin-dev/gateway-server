@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/test")
 public class TestController {
 
-    private final Host2NasService host2NasService;
+
 
     @Autowired
     public TestController(Host2NasService host2NasService) {
