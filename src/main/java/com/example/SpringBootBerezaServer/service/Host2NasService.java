@@ -69,10 +69,10 @@ public class Host2NasService {
             Host2Nas response = parsingResponse(responseXML);
 
 
-//            save(request);
-//            save(response);
+            save(request);
+            save(response);
             writeLogH2N(requestXML, responseXML);
-            return responseXML;
+            return responseXML+";";
         } catch (Exception ex) {
             writeLogH2N(requestXML, responseXML, ex.getMessage());
             throw ex;
@@ -88,8 +88,8 @@ public class Host2NasService {
             responseXML = sendToNasAndWriteLogTEST(requestXML);
             Host2Nas response = parsingXML(responseXML);
 
-//        save(request);
-//        save(response);
+        save(request);
+        save(response);
             writeLogH2N(requestXML, responseXML);
             return responseXML;
         } catch (Exception ex) {
