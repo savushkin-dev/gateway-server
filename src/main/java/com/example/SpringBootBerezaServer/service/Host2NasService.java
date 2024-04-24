@@ -61,17 +61,27 @@ public class Host2NasService {
     }
 
     @Transactional
-    public String SendAndSave(String xml){
-        Host2Nas host2Nas = parsingXML(xml);
-        save(host2Nas);
-        return sendToNasAndWriteLog(xml);
+    public String SendAndSave(String requestXML){
+        Host2Nas request = parsingXML(requestXML);
+        String responseXML = sendToNasAndWriteLog(requestXML);
+        Host2Nas response = parsingXML(responseXML);
+
+        save(request);
+        save(response);
+        writeLogH2N(requestXML, responseXML);
+        return responseXML;
     }
 
     @Transactional
-    public String SendAndSaveTEST(String xml){
-        Host2Nas host2Nas = parsingXML(xml);
-        save(host2Nas);
-        return sendToNasAndWriteLogTEST(xml);
+    public String SendAndSaveTEST(String requestXML){
+        Host2Nas request = parsingXML(requestXML);
+        String responseXML = sendToNasAndWriteLogTEST(requestXML);
+        Host2Nas response = parsingXML(responseXML);
+
+        save(request);
+        save(response);
+        writeLogH2N(requestXML, responseXML);
+        return responseXML;
     }
 
     private String sendToNasAndWriteLog(String requestXML){
@@ -93,7 +103,7 @@ public class Host2NasService {
             throw new NasRemoteServerException("Exception when requesting to remote server!");
         }
 
-        writeLogH2N(requestXML, response.getBody());
+
 
         return response.getBody();
     }
@@ -119,13 +129,67 @@ public class Host2NasService {
             throw new NasRemoteServerException("Exception when requesting to remote server!");
         }
 
-        writeLogH2N(requestXML, response.getBody());
 
         return response.getBody();
     }
 
 
     public Host2Nas parsingXML(String xml){
+        //StAX парсер
+        String MSGID = "", MSGTYPE = "", REPLYTO = "", TIMESTAMP = "", FACILITY = "", ACTION = "", SENDER = "", RECEIVER = "";
+
+        try {
+
+            XMLInputFactory xmlInputFactory = XMLInputFactory.newInstance();
+            XMLEventReader reader = xmlInputFactory.createXMLEventReader(new StringReader(xml));
+
+
+            while (reader.hasNext()) {
+                XMLEvent nextEvent = reader.nextEvent();
+                if (nextEvent.isStartElement()) {
+                    StartElement startElement = nextEvent.asStartElement();
+
+
+                    if (startElement.getName().getLocalPart().equals("ITEM")) {
+//                        System.out.println(reader.getElementText().isEmpty()); //проверить тег на пустоту
+                        break; //выход из потока после окончания заголовка
+                    }
+
+                    switch (startElement.getName().getLocalPart()) {
+                        case "MSGID" -> MSGID = validateTag(reader);
+                        case "MSGTYPE" -> MSGTYPE = validateTag(reader);
+                        case "REPLYTO" -> REPLYTO = validateTag(reader);
+                        case "TIMESTAMP" -> TIMESTAMP = validateTag(reader);
+                        case "FACILITY" -> FACILITY = validateTag(reader);
+                        case "ACTION" -> ACTION = validateTag(reader);
+                        case "SENDER" -> SENDER = validateTag(reader);
+                        case "RECEIVER" -> RECEIVER = validateTag(reader);
+                    }
+
+                }
+            }
+
+            if(MSGID.isEmpty() || MSGTYPE.isEmpty() || TIMESTAMP.isEmpty() || ACTION.isEmpty() || REPLYTO.isEmpty() ){
+                writeLogH2N(xml, "-","XMLParsingException - Required fields are not filled in!");
+                throw new XMLParsingException("Required fields are not filled in!");
+            }
+
+            Host2Nas host2Nas = new Host2Nas(MSGID,MSGTYPE,REPLYTO, LocalDateTime.parse(TIMESTAMP,
+                    Host2NasService.DATE_FORMAT) ,FACILITY,ACTION,SENDER,RECEIVER);
+            host2Nas.setDATA(xml);
+
+//            System.out.println(host2Nas);
+            return host2Nas;
+
+        } catch (XMLStreamException e) {
+            writeLogH2N(xml, "-","XMLParsingException - " + e.getMessage());
+            throw new XMLParsingException(e.getMessage());
+        }
+
+
+    }
+
+    public Host2Nas parsingNAS(String xml){
         //StAX парсер
         String MSGID = "", MSGTYPE = "", REPLYTO = "", TIMESTAMP = "", FACILITY = "", ACTION = "", SENDER = "", RECEIVER = "";
 
