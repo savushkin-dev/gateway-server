@@ -98,7 +98,7 @@
 
 
     <!-- org.hibernate -->
-    <logger name="org.hibernate" level="error" additivity="false">
+    <logger name="org.hibernate" level="info" additivity="false">
         <appender-ref ref="DBFile" />
 <!--        <appender-ref ref="Console" />-->
     </logger>

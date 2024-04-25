@@ -31,10 +31,10 @@ public class NasController {
         return ResponseEntity.ok(host2NasService.SendAndSave(requestXML));
     }
 
-    @PostMapping(value = "/hosttohost", produces = MediaType.APPLICATION_XML_VALUE)
-    public ResponseEntity<?> hosttohost(@RequestBody String requestXML) {
-        return ResponseEntity.ok(host2NasService.SendAndSaveTEST(requestXML));
-    }
+//    @PostMapping(value = "/hosttohost", produces = MediaType.APPLICATION_XML_VALUE)
+//    public ResponseEntity<?> hosttohost(@RequestBody String requestXML) {
+//        return ResponseEntity.ok(host2NasService.SendAndSaveTEST(requestXML));
+//    }
 
 
     //вместо словен
