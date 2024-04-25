@@ -5,7 +5,7 @@ import com.example.SpringBootBerezaServer.exceptions.NAS.NasRemoteServerExceptio
 import com.example.SpringBootBerezaServer.exceptions.XMLParsingException;
 import com.example.SpringBootBerezaServer.model.Host2Nas;
 import com.example.SpringBootBerezaServer.repositories.Host2NasRepository;
-import com.example.SpringBootBerezaServer.repositories.Nas2HostRepository;
+import jakarta.persistence.EntityManager;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.*;
 import org.springframework.stereotype.Service;
@@ -30,8 +30,8 @@ import java.util.*;
 @Transactional(readOnly = true)
 public class Host2NasService {
 
-//    private static final String FILE_PATH="/srv/logHost2NAS";
-    private static final String FILE_PATH = "logHost2NAS";
+        private static final String FILE_PATH="/srv/logHost2NAS";
+//    private static final String FILE_PATH = "logHost2NAS";
 
     private final String NAS_URL = "http://192.168.10.205:8082/api/hosttonas";
 
@@ -44,11 +44,14 @@ public class Host2NasService {
 
     private final Host2NasRepository host2NasRepository;
 
+    private final EntityManager entityManager;
+
 
     @Autowired
-    public Host2NasService(RestTemplate restTemplate, Host2NasRepository host2NasRepository) {
+    public Host2NasService(RestTemplate restTemplate, Host2NasRepository host2NasRepository, EntityManager entityManager) {
         this.restTemplate = restTemplate;
         this.host2NasRepository = host2NasRepository;
+        this.entityManager = entityManager;
     }
 
 
@@ -62,16 +65,18 @@ public class Host2NasService {
     }
 
 
+    @Transactional(noRollbackFor = RuntimeException.class)
     public String SendAndSave(String requestXML) {
         String responseXML = "-";
+        Host2Nas request = new Host2Nas();
         try {
-            Host2Nas request = parsingXML(requestXML, new Host2Nas());
+            request = parsingXML(requestXML, request);
+
             save(request);
 
-            responseXML = sendToNasAndWriteLog(requestXML);
+            responseXML = sendToNas(requestXML);
 
-
-            if(request.getERRCODE()!=0){
+            if (request.getERRCODE() != 0) {
                 throw new NasException(request.getERRTEXT());
             }
 
@@ -87,30 +92,13 @@ public class Host2NasService {
     }
 
 
-    public String SendAndSaveTEST(String requestXML) {
-        String responseXML = "-";
-        try {
-            Host2Nas request = parsingXML(requestXML, new Host2Nas());
-            responseXML = sendToNasAndWriteLogTEST(requestXML);
-//            Host2Nas response = parsingXML(responseXML);
-
-            save(request);
-//        save(response);
-            writeLogH2N(requestXML, responseXML);
-            return responseXML;
-        } catch (Exception ex) {
-            writeLogH2N(requestXML, responseXML, ex.getMessage());
-            throw ex;
-        }
-    }
-
-    private String sendToNasAndWriteLog(String requestXML) {
+    private String sendToNas(String requestXML) {
 
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_XML);
 
-//        headers.add("Authorization", tokenNas);
-        headers.add("Authorization", tokenTest);
+        headers.add("Authorization", tokenNas);
+//        headers.add("Authorization", tokenTest);
 
         HttpEntity<String> request = new HttpEntity<>(requestXML, headers);
 
@@ -119,38 +107,12 @@ public class Host2NasService {
         ResponseEntity<String> response = null;
         try {
             response = restTemplate.postForEntity(
-//                    NAS_URL,
-                    "http://localhost:7592/api/hosttonasTest",
+                    NAS_URL,
+//                    "http://localhost:7592/api/hosttonasTest",
                     request, String.class);
             responseXML = response.getBody();
         } catch (Exception e) {
             throw new NasRemoteServerException("Exception when requesting to remote server!" + e.getMessage(), responseXML);
-        }
-
-
-        return responseXML;
-    }
-
-    private String sendToNasAndWriteLogTEST(String requestXML) {
-
-        HttpHeaders headers = new HttpHeaders();
-        headers.setContentType(MediaType.APPLICATION_XML);
-
-        headers.add("Authorization", tokenTest);
-
-        HttpEntity<String> request = new HttpEntity<>(requestXML, headers);
-
-        String responseXML = "-";
-
-        ResponseEntity<String> response = null;
-        try {
-            response = restTemplate
-                    .exchange("http://localhost:7592/api/hosttonasTest",
-//                    .exchange("http://10.35.0.4:7592/api/hosttonasTest",
-                            HttpMethod.POST, request, String.class);
-            responseXML = response.getBody();
-        } catch (Exception e) {
-            throw new NasRemoteServerException("Exception when requesting to remote server!" + e.getMessage());
         }
 
 
@@ -222,38 +184,42 @@ public class Host2NasService {
                 host2Nas.setERRCODE(400);
                 StringBuilder textError = new StringBuilder("Required fields not filled in: ");
                 for (String x : errorFields) {
-                    textError.append(x +"; ");
+                    textError.append(x + "; ");
                 }
                 host2Nas.setERRTEXT(textError.toString());
             }
 
-
-            try {
-                host2Nas.setMSGID(map.get("MSGID"));
-                host2Nas.setMSGTYPE(map.get("MSGTYPE"));
-                host2Nas.setREPLYTO(map.get("REPLYTO"));
-                host2Nas.setTIMESTAMP(LocalDateTime.parse(map.get("TIMESTAMP"), Host2NasService.DATE_FORMAT));
-                host2Nas.setFACILITY(map.get("FACILITY"));
-                host2Nas.setACTION(map.get("ACTION"));
-                host2Nas.setSENDER(map.get("SENDER"));
-                host2Nas.setRECEIVER(map.get("RECEIVER"));
-                host2Nas.setDATA(xml);
-            } catch (Exception e){
-//                host2Nas.setERRCODE(400);
-                host2Nas.setERRTEXT(host2Nas.getERRTEXT()+" Not all fields are filled in correctly;");
-            }
+            host2Nas = assignFields(host2Nas, map);
+            host2Nas.setDATA(xml);
 
 
-//            System.out.println(host2Nas);
             return host2Nas;
 
         } catch (XMLStreamException e) {
+//            System.out.println("Ошибка XMLStreamException!");
             throw new XMLParsingException(e.getMessage());
         }
 
 
     }
 
+    private Host2Nas assignFields(Host2Nas host2Nas, Map<String, String> map) {
+        try {
+            host2Nas.setMSGID(map.get("MSGID"));
+            host2Nas.setMSGTYPE(map.get("MSGTYPE"));
+            host2Nas.setREPLYTO(map.get("REPLYTO"));
+            host2Nas.setTIMESTAMP(LocalDateTime.parse(map.get("TIMESTAMP"), Host2NasService.DATE_FORMAT));
+            host2Nas.setFACILITY(map.get("FACILITY"));
+            host2Nas.setACTION(map.get("ACTION"));
+            host2Nas.setSENDER(map.get("SENDER"));
+            host2Nas.setRECEIVER(map.get("RECEIVER"));
+            host2Nas.setDT(LocalDateTime.now());
+        } catch (Exception e) {
+//                host2Nas.setERRCODE(400);
+            host2Nas.setERRTEXT(host2Nas.getERRTEXT() + " Not all fields are filled in correctly;");
+        }
+        return host2Nas;
+    }
 
     private String validateTag(XMLEventReader reader) throws XMLStreamException {
         try {

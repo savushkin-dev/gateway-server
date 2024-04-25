@@ -2,6 +2,7 @@ package com.example.SpringBootBerezaServer.service;
 
 import com.example.SpringBootBerezaServer.exceptions.NAS.NasException;
 import com.example.SpringBootBerezaServer.exceptions.XMLParsingException;
+import com.example.SpringBootBerezaServer.model.Host2Nas;
 import com.example.SpringBootBerezaServer.model.Nas2Host;
 import com.example.SpringBootBerezaServer.repositories.Nas2HostRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,8 +28,8 @@ import java.util.Map;
 @Transactional(readOnly = true)
 public class Nas2HostService {
 
-    //    private static final String FILE_PATH="/srv/logNAS2Host";
-    private static final String FILE_PATH = "logNAS2Host";
+        private static final String FILE_PATH="/srv/logNAS2Host";
+//    private static final String FILE_PATH = "logNAS2Host";
 
     private final Nas2HostRepository nas2HostRepository;
 
@@ -46,20 +47,17 @@ public class Nas2HostService {
         nas2HostRepository.save(message);
     }
 
-
+    @Transactional(noRollbackFor = RuntimeException.class)
     public void saveResponse(String requestXML) {
         try {
             Nas2Host nas2Host = parsingXML(requestXML, new Nas2Host());
-            try {
-                save(nas2Host);
-            } catch (Exception e){
-                System.out.println("ошибка при сохранении в бд");
-            }
 
+            save(nas2Host);
 
             if (nas2Host.getERRCODE() != 0) {
                 throw new NasException(nas2Host.getERRTEXT());
             }
+
             writeLogN2H(requestXML);
         } catch (Exception ex) {
             writeLogN2H(requestXML, ex.getMessage());
@@ -138,19 +136,8 @@ public class Nas2HostService {
             }
 
 
-            try {
-                nas2Host.setMSGID(map.get("MSGID"));
-                nas2Host.setMSGTYPE(map.get("MSGTYPE"));
-                nas2Host.setREPLYTO(map.get("REPLYTO"));
-                nas2Host.setTIMESTAMP(LocalDateTime.parse(map.get("TIMESTAMP"), Host2NasService.DATE_FORMAT));
-                nas2Host.setFACILITY(map.get("FACILITY"));
-                nas2Host.setACTION(map.get("ACTION"));
-                nas2Host.setSENDER(map.get("SENDER"));
-                nas2Host.setRECEIVER(map.get("RECEIVER"));
-                nas2Host.setDATA(xml);
-            } catch (Exception e) {
-                nas2Host.setERRTEXT(nas2Host.getERRTEXT() + " Not all fields are filled in correctly;");
-            }
+            nas2Host = assignFields(nas2Host, map);
+            nas2Host.setDATA(xml);
 
 
 //            System.out.println(host2Nas);
@@ -161,6 +148,24 @@ public class Nas2HostService {
         }
 
 
+    }
+
+    private Nas2Host assignFields(Nas2Host nas2Host, Map<String, String> map) {
+        try {
+            nas2Host.setMSGID(map.get("MSGID"));
+            nas2Host.setMSGTYPE(map.get("MSGTYPE"));
+            nas2Host.setREPLYTO(map.get("REPLYTO"));
+            nas2Host.setTIMESTAMP(LocalDateTime.parse(map.get("TIMESTAMP"), Host2NasService.DATE_FORMAT));
+            nas2Host.setFACILITY(map.get("FACILITY"));
+            nas2Host.setACTION(map.get("ACTION"));
+            nas2Host.setSENDER(map.get("SENDER"));
+            nas2Host.setRECEIVER(map.get("RECEIVER"));
+            nas2Host.setDT(LocalDateTime.now());
+        } catch (Exception e) {
+//                host2Nas.setERRCODE(400);
+            nas2Host.setERRTEXT(nas2Host.getERRTEXT() + " Not all fields are filled in correctly;");
+        }
+        return nas2Host;
     }
 
 
