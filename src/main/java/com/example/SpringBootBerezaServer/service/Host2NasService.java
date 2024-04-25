@@ -1,5 +1,6 @@
 package com.example.SpringBootBerezaServer.service;
 
+import com.example.SpringBootBerezaServer.exceptions.NAS.NasException;
 import com.example.SpringBootBerezaServer.exceptions.NAS.NasRemoteServerException;
 import com.example.SpringBootBerezaServer.exceptions.XMLParsingException;
 import com.example.SpringBootBerezaServer.model.Host2Nas;
@@ -23,14 +24,14 @@ import java.io.StringReader;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeFormatterBuilder;
-import java.util.List;
+import java.util.*;
 
 @Service
 @Transactional(readOnly = true)
 public class Host2NasService {
 
-                private static final String FILE_PATH="/srv/logHost2NAS";
-//    private static final String FILE_PATH = "logHost2NAS";
+//    private static final String FILE_PATH="/srv/logHost2NAS";
+    private static final String FILE_PATH = "logHost2NAS";
 
     private final String NAS_URL = "http://192.168.10.205:8082/api/hosttonas";
 
@@ -60,19 +61,24 @@ public class Host2NasService {
         host2NasRepository.save(message);
     }
 
-    @Transactional
+
     public String SendAndSave(String requestXML) {
         String responseXML = "-";
         try {
-            Host2Nas request = parsingXML(requestXML);
-            responseXML = sendToNasAndWriteLog(requestXML);
-            Host2Nas response = parsingResponse(responseXML);
-
-
+            Host2Nas request = parsingXML(requestXML, new Host2Nas());
             save(request);
-            save(response);
+
+            responseXML = sendToNasAndWriteLog(requestXML);
+
+
+            if(request.getERRCODE()!=0){
+                throw new NasException(request.getERRTEXT());
+            }
+
             writeLogH2N(requestXML, responseXML);
-            return responseXML+";";
+
+            return responseXML + ";";
+
         } catch (Exception ex) {
             writeLogH2N(requestXML, responseXML, ex.getMessage());
             throw ex;
@@ -80,16 +86,16 @@ public class Host2NasService {
 
     }
 
-    @Transactional
+
     public String SendAndSaveTEST(String requestXML) {
         String responseXML = "-";
         try {
-            Host2Nas request = parsingXML(requestXML);
+            Host2Nas request = parsingXML(requestXML, new Host2Nas());
             responseXML = sendToNasAndWriteLogTEST(requestXML);
-            Host2Nas response = parsingXML(responseXML);
+//            Host2Nas response = parsingXML(responseXML);
 
-        save(request);
-        save(response);
+            save(request);
+//        save(response);
             writeLogH2N(requestXML, responseXML);
             return responseXML;
         } catch (Exception ex) {
@@ -103,7 +109,8 @@ public class Host2NasService {
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_XML);
 
-        headers.add("Authorization", tokenNas);
+//        headers.add("Authorization", tokenNas);
+        headers.add("Authorization", tokenTest);
 
         HttpEntity<String> request = new HttpEntity<>(requestXML, headers);
 
@@ -111,11 +118,13 @@ public class Host2NasService {
 
         ResponseEntity<String> response = null;
         try {
-            response = restTemplate.postForEntity(NAS_URL,
+            response = restTemplate.postForEntity(
+//                    NAS_URL,
+                    "http://localhost:7592/api/hosttonasTest",
                     request, String.class);
             responseXML = response.getBody();
         } catch (Exception e) {
-            throw new NasRemoteServerException("Exception when requesting to remote server!" + e.getMessage());
+            throw new NasRemoteServerException("Exception when requesting to remote server!" + e.getMessage(), responseXML);
         }
 
 
@@ -136,8 +145,8 @@ public class Host2NasService {
         ResponseEntity<String> response = null;
         try {
             response = restTemplate
-//                    .exchange("http://localhost:7592/api/hosttonasTest",
-                    .exchange("http://10.35.0.4:7592/api/hosttonasTest",
+                    .exchange("http://localhost:7592/api/hosttonasTest",
+//                    .exchange("http://10.35.0.4:7592/api/hosttonasTest",
                             HttpMethod.POST, request, String.class);
             responseXML = response.getBody();
         } catch (Exception e) {
@@ -149,9 +158,24 @@ public class Host2NasService {
     }
 
 
-    public Host2Nas parsingXML(String xml) {
+    public Host2Nas parsingXML(String xml, Host2Nas host2Nas) {
         //StAX парсер
-        String MSGID = "", MSGTYPE = "", REPLYTO = "", TIMESTAMP = "", FACILITY = "", ACTION = "", SENDER = "", RECEIVER = "";
+
+        Map<String, String> map = new HashMap<>();
+        map.put("MSGID", "");
+        map.put("MSGTYPE", "");
+        map.put("REPLYTO", "");
+        map.put("TIMESTAMP", "");
+        map.put("FACILITY", "");
+        map.put("ACTION", "");
+        map.put("SENDER", "");
+        map.put("RECEIVER", "");
+
+        ArrayList<String> requiredFields = new ArrayList<>();
+        requiredFields.add("MSGID");
+        requiredFields.add("MSGTYPE");
+        requiredFields.add("TIMESTAMP");
+        requiredFields.add("ACTION");
 
         try {
 
@@ -171,55 +195,65 @@ public class Host2NasService {
                     }
 
                     switch (startElement.getName().getLocalPart()) {
-                        case "MSGID" -> MSGID = validateTag(reader);
-                        case "MSGTYPE" -> MSGTYPE = validateTag(reader);
-                        case "REPLYTO" -> REPLYTO = validateTag(reader);
-                        case "TIMESTAMP" -> TIMESTAMP = validateTag(reader);
-                        case "FACILITY" -> FACILITY = validateTag(reader);
-                        case "ACTION" -> ACTION = validateTag(reader);
-                        case "SENDER" -> SENDER = validateTag(reader);
-                        case "RECEIVER" -> RECEIVER = validateTag(reader);
+                        case "MSGID" -> map.put("MSGID", validateTag(reader));
+                        case "MSGTYPE" -> map.put("MSGTYPE", validateTag(reader));
+                        case "REPLYTO" -> map.put("REPLYTO", validateTag(reader));
+                        case "TIMESTAMP" -> map.put("TIMESTAMP", validateTag(reader));
+                        case "FACILITY" -> map.put("FACILITY", validateTag(reader));
+                        case "ACTION" -> map.put("ACTION", validateTag(reader));
+                        case "SENDER" -> map.put("SENDER", validateTag(reader));
+                        case "RECEIVER" -> map.put("RECEIVER", validateTag(reader));
                     }
 
                 }
             }
 
-            if (MSGID.isEmpty() || MSGTYPE.isEmpty() || TIMESTAMP.isEmpty() || ACTION.isEmpty()) {
-//                writeLogH2N(xml, "-", "XMLParsingException - Required fields are not filled in!");
-                throw new XMLParsingException("Required fields are not filled in!");
+
+            ArrayList<String> errorFields = new ArrayList<>();
+
+            for (String key : map.keySet()) {
+                if (requiredFields.contains(key) && map.get(key).isEmpty()) {
+                    errorFields.add(key);
+                }
             }
 
-            Host2Nas host2Nas = new Host2Nas(MSGID, MSGTYPE, REPLYTO, LocalDateTime.parse(TIMESTAMP,
-                    Host2NasService.DATE_FORMAT), FACILITY, ACTION, SENDER, RECEIVER);
-            host2Nas.setDATA(xml);
+
+            if (!errorFields.isEmpty()) {
+                host2Nas.setERRCODE(400);
+                StringBuilder textError = new StringBuilder("Required fields not filled in: ");
+                for (String x : errorFields) {
+                    textError.append(x +"; ");
+                }
+                host2Nas.setERRTEXT(textError.toString());
+            }
+
+
+            try {
+                host2Nas.setMSGID(map.get("MSGID"));
+                host2Nas.setMSGTYPE(map.get("MSGTYPE"));
+                host2Nas.setREPLYTO(map.get("REPLYTO"));
+                host2Nas.setTIMESTAMP(LocalDateTime.parse(map.get("TIMESTAMP"), Host2NasService.DATE_FORMAT));
+                host2Nas.setFACILITY(map.get("FACILITY"));
+                host2Nas.setACTION(map.get("ACTION"));
+                host2Nas.setSENDER(map.get("SENDER"));
+                host2Nas.setRECEIVER(map.get("RECEIVER"));
+                host2Nas.setDATA(xml);
+            } catch (Exception e){
+//                host2Nas.setERRCODE(400);
+                host2Nas.setERRTEXT(host2Nas.getERRTEXT()+" Not all fields are filled in correctly;");
+            }
+
 
 //            System.out.println(host2Nas);
             return host2Nas;
 
         } catch (XMLStreamException e) {
-//            writeLogH2N(xml, "-", "XMLParsingException - " + e.getMessage());
             throw new XMLParsingException(e.getMessage());
         }
 
 
     }
 
-    public Host2Nas parsingResponse(String xml) {
-        //StAX парсер
-//       try {
-            Host2Nas host2Nas = new Host2Nas();
-            host2Nas.setDATA(xml);
-
-//            System.out.println(host2Nas);
-            return host2Nas;
-
-//        } catch (XMLStreamException e) {
-//            writeLogH2N(xml, "-", "XMLParsingException - " + e.getMessage());
-//            throw new XMLParsingException(e.getMessage());
-//        }
-
-
-    }
 
     private String validateTag(XMLEventReader reader) throws XMLStreamException {
         try {

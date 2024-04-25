@@ -82,12 +82,9 @@ public class RestResponseEntityExceptionHandler extends ResponseEntityExceptionH
     }
 
 
-//    @RequestMapping(produces = MediaType.APPLICATION_XML_VALUE)
     @ExceptionHandler({NasException.class})
     public ResponseEntity<?> handleNasException(Exception ex, WebRequest request) {
-        AppError response = new AppError("NasException; " + ex.getMessage());
-//        return new ResponseEntity<AppError>(
-//                response, HttpStatus.BAD_REQUEST);
+        Sysstat response = new Sysstat(HttpStatus.BAD_REQUEST.value(),"NasException; " + ex.getMessage());
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).contentType(MediaType.APPLICATION_XML).body(response);
     }
 
@@ -97,17 +94,4 @@ public class RestResponseEntityExceptionHandler extends ResponseEntityExceptionH
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).contentType(MediaType.APPLICATION_XML).body(response);
     }
 
-//    @ExceptionHandler({Exception.class}) //отвечает за авторизацию
-//    public ResponseEntity<AppError> handleException(Exception ex, HttpServletRequest request, HttpServletResponse response) {
-//
-//        System.out.println("Handler response!");
-//
-//        AppError error = new AppError(ex.getMessage());
-//        if (response.getHeader("error") != null)
-//            error.setMessage(response.getHeader("error"));
-//
-//        return ResponseEntity.status(response.getStatus())
-//                .contentType(MediaType.parseMediaType(response.getContentType()))
-//                .body(error);
-//    }
 }
