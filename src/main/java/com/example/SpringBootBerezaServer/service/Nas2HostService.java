@@ -2,9 +2,9 @@ package com.example.SpringBootBerezaServer.service;
 
 import com.example.SpringBootBerezaServer.exceptions.NAS.NasException;
 import com.example.SpringBootBerezaServer.exceptions.XMLParsingException;
-import com.example.SpringBootBerezaServer.model.Host2Nas;
 import com.example.SpringBootBerezaServer.model.Nas2Host;
 import com.example.SpringBootBerezaServer.repositories.Nas2HostRepository;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -24,18 +24,22 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+@Slf4j
 @Service
 @Transactional(readOnly = true)
 public class Nas2HostService {
 
-        private static final String FILE_PATH="/srv/logNAS2Host";
-//    private static final String FILE_PATH = "logNAS2Host";
+//        private static final String FILE_PATH="/srv/logNAS2Host";
+    private static final String FILE_PATH = "logNAS2Host";
 
     private final Nas2HostRepository nas2HostRepository;
 
+    private final KafkaService kafkaService;
+
     @Autowired
-    public Nas2HostService(Nas2HostRepository nas2HostRepository) {
+    public Nas2HostService(Nas2HostRepository nas2HostRepository, KafkaService kafkaService) {
         this.nas2HostRepository = nas2HostRepository;
+        this.kafkaService = kafkaService;
     }
 
     public List<Nas2Host> findAll() {
@@ -54,12 +58,15 @@ public class Nas2HostService {
 
             save(nas2Host);
 
+            kafkaService.sendMessage(requestXML, "NasToHost");
+
             if (nas2Host.getERRCODE() != 0) {
                 throw new NasException(nas2Host.getERRTEXT());
             }
 
             writeLogN2H(requestXML);
         } catch (Exception ex) {
+            log.error(ex.toString());
             writeLogN2H(requestXML, ex.getMessage());
             throw ex;
         }

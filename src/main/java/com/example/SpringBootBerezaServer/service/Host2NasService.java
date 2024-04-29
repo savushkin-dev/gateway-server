@@ -30,8 +30,8 @@ import java.util.*;
 @Transactional(readOnly = true)
 public class Host2NasService {
 
-        private static final String FILE_PATH="/srv/logHost2NAS";
-//    private static final String FILE_PATH = "logHost2NAS";
+//        private static final String FILE_PATH="/srv/logHost2NAS";
+    private static final String FILE_PATH = "logHost2NAS";
 
     private final String NAS_URL = "http://192.168.10.205:8082/api/hosttonas";
 
@@ -74,7 +74,7 @@ public class Host2NasService {
 
             save(request);
 
-            responseXML = sendToNas(requestXML);
+            responseXML = callNas(requestXML);
 
             if (request.getERRCODE() != 0) {
                 throw new NasException(request.getERRTEXT());
@@ -92,7 +92,7 @@ public class Host2NasService {
     }
 
 
-    private String sendToNas(String requestXML) {
+    private String callNas(String requestXML) {
 
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_XML);
