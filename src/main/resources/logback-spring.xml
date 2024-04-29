@@ -31,6 +31,13 @@
         </encoder>
     </appender>
 
+    <appender name="KAFKAFile" class="ch.qos.logback.core.FileAppender">
+        <file>${LOGS}/logger-KAFKA.log</file>
+        <encoder>
+            <pattern>%d{ISO8601} %-5level %t %logger{36}: %msg%n%throwable</pattern>
+        </encoder>
+    </appender>
+
 <!--    <appender name="WEBFile" class="ch.qos.logback.core.rolling.RollingFileAppender">-->
 <!--        <file>${LOGS}/logger-WEB.log</file>-->
 
@@ -108,6 +115,11 @@
 <!--&lt;!&ndash;        <appender-ref ref="Console" />&ndash;&gt;-->
 <!--    </logger>-->
 
+
+    <logger name="org.springframework.kafka" level="debug" additivity="false">
+        <appender-ref ref="KAFKAFile" />
+        <appender-ref ref="Console" />
+    </logger>
 
 
 
