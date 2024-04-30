@@ -6,6 +6,7 @@ import com.example.SpringBootBerezaServer.exceptions.XMLParsingException;
 import com.example.SpringBootBerezaServer.model.Host2Nas;
 import com.example.SpringBootBerezaServer.repositories.Host2NasRepository;
 import jakarta.persistence.EntityManager;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.*;
 import org.springframework.stereotype.Service;
@@ -26,31 +27,31 @@ import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeFormatterBuilder;
 import java.util.*;
 
+@Slf4j
 @Service
 @Transactional(readOnly = true)
 public class Host2NasService {
 
-//        private static final String FILE_PATH="/srv/logHost2NAS";
-    private static final String FILE_PATH = "logHost2NAS";
+        private static final String FILE_PATH="/srv/logHost2NAS";
+//    private static final String FILE_PATH = "logHost2NAS";
 
     private final String NAS_URL = "http://192.168.10.205:8082/api/hosttonas";
 
     private final String tokenNas = "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1bmlxdWVfbmFtZSI6IlNhdnVzaGtpbiIsIm5iZiI6MTcxMTcwNDE0MCwiZXhwIjozMjg5NTQ0NTQwLCJpYXQiOjE3MTE3MDc3NDAsImlzcyI6IkFQUyBkLm8uby4ifQ.8XkzdsBawFhAYrZ8FWVo0QbHmY6pgktvuPf7B_Rq-iI";
-
     private final String tokenTest = "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJVc2VyIGRldGFpbHMiLCJ1c2VybmFtZSI6InNhdnVzaGtpbiIsImlhdCI6MTcxMzg3MjkzOCwiaXNzIjoiU3ByaW5nLUJlcmV6YS1TZXJ2ZXIiLCJleHAiOjE3NDU0MDg5Mzh9.maKaKK9maP2eUfSt0nXZlWAOBQOcLeb2lBj_5zHBl3I";
 
 
     private final RestTemplate restTemplate;
-
     private final Host2NasRepository host2NasRepository;
-
+    private final KafkaService kafkaService;
     private final EntityManager entityManager;
 
 
     @Autowired
-    public Host2NasService(RestTemplate restTemplate, Host2NasRepository host2NasRepository, EntityManager entityManager) {
+    public Host2NasService(RestTemplate restTemplate, Host2NasRepository host2NasRepository, KafkaService kafkaService, EntityManager entityManager) {
         this.restTemplate = restTemplate;
         this.host2NasRepository = host2NasRepository;
+        this.kafkaService = kafkaService;
         this.entityManager = entityManager;
     }
 
@@ -65,27 +66,49 @@ public class Host2NasService {
     }
 
 
+
     @Transactional(noRollbackFor = RuntimeException.class)
     public String SendAndSave(String requestXML) {
+        long durParsing = -1;
+        long durDB = -1;
+        long durKafka = -1;
+
+
         String responseXML = "-";
         Host2Nas request = new Host2Nas();
         try {
-            request = parsingXML(requestXML, request);
 
+            long startTimeParsing = System.nanoTime();
+            request = parsingXML(requestXML, request);
+            long endTimeParsing = System.nanoTime();
+            durParsing = (endTimeParsing - startTimeParsing);
+
+
+            long startTimeDB = System.nanoTime();
             save(request);
+            long endTimeDB = System.nanoTime();
+            durDB = (endTimeDB - startTimeDB);
+
+            long startTimeKafka = System.nanoTime();
+            kafkaService.sendMessage(requestXML, "HostToNas");
+            long endTimeKafka = System.nanoTime();
+            durKafka = (endTimeKafka - startTimeKafka);
+
 
             responseXML = callNas(requestXML);
+
 
             if (request.getERRCODE() != 0) {
                 throw new NasException(request.getERRTEXT());
             }
 
-            writeLogH2N(requestXML, responseXML);
+            writeLogH2N(requestXML, responseXML, durParsing, durDB, durKafka);
 
             return responseXML + ";";
 
         } catch (Exception ex) {
-            writeLogH2N(requestXML, responseXML, ex.getMessage());
+            log.error(ex.toString());
+            writeLogH2N(requestXML, responseXML, ex.getMessage(), durParsing, durDB, durKafka);
             throw ex;
         }
 
@@ -229,11 +252,14 @@ public class Host2NasService {
         }
     }
 
-    private static void writeLogH2N(String request, String response) {
+    private static void writeLogH2N(String request, String response, long durParsing, long durDB, long durKafka) {
         BufferedWriter writer = null;
         try {
             writer = new BufferedWriter(new FileWriter(FILE_PATH, true));
             writer.write("Message date - " + LocalDateTime.now() + "\n\n");
+            writer.write("Duration parsing+validation: " + durParsing + "\n");
+            writer.write("Duration save in DB: " + durDB + "\n");
+            writer.write("Duration send to kafka: " + durKafka + "\n\n");
             writer.write("Request:" + "\n");
             writer.write(request + "\n\n");
             writer.write("Response:" + "\n");
@@ -242,15 +268,19 @@ public class Host2NasService {
             writer.write(System.lineSeparator());
             writer.close();
         } catch (IOException e) {
+            log.error(e.toString());
             throw new RuntimeException(e);
         }
     }
 
-    private static void writeLogH2N(String request, String response, String error) {
+    private static void writeLogH2N(String request, String response, String error, long durParsing, long durDB, long durKafka) {
         BufferedWriter writer = null;
         try {
             writer = new BufferedWriter(new FileWriter(FILE_PATH, true));
             writer.write("Message date - " + LocalDateTime.now() + "\n\n");
+            writer.write("Duration parsing+validation: " + durParsing + "\n");
+            writer.write("Duration save in DB: " + durDB + "\n");
+            writer.write("Duration send to kafka: " + durKafka + "\n\n");
             writer.write("Request:" + "\n");
             writer.write(request + "\n\n");
             writer.write("Response:" + "\n");
@@ -261,6 +291,7 @@ public class Host2NasService {
             writer.write(System.lineSeparator());
             writer.close();
         } catch (IOException e) {
+            log.error(e.toString());
             throw new RuntimeException(e);
         }
     }

@@ -16,6 +16,12 @@
         </layout>
     </appender>
 
+    <appender name="APPFile" class="ch.qos.logback.core.FileAppender">
+        <file>${LOGS}/logger-SPRING.log</file>
+        <encoder>
+            <pattern>%d{ISO8601} %-5level %t %logger{36}: %msg%n%throwable</pattern>
+        </encoder>
+    </appender>
 
     <appender name="WEBFile" class="ch.qos.logback.core.FileAppender">
         <file>${LOGS}/logger-WEB.log</file>
@@ -38,70 +44,21 @@
         </encoder>
     </appender>
 
-<!--    <appender name="WEBFile" class="ch.qos.logback.core.rolling.RollingFileAppender">-->
-<!--        <file>${LOGS}/logger-WEB.log</file>-->
-
-<!--        <encoder class="ch.qos.logback.classic.encoder.PatternLayoutEncoder">-->
-<!--            <Pattern>%d{ISO8601} %-5level %t %logger{36}: %msg%n%throwable</Pattern>-->
-<!--        </encoder>-->
-
-<!--        -->
-<!--        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">-->
-<!--            &lt;!&ndash; rollover daily and when the file reaches 10 MegaBytes &ndash;&gt;-->
-<!--            <fileNamePattern>${LOGS}/archived/logger-WEB-%d{yyyy-MM-dd}.%i.log-->
-<!--            </fileNamePattern>-->
-<!--            <timeBasedFileNamingAndTriggeringPolicy-->
-<!--                    class="ch.qos.logback.core.rolling.SizeAndTimeBasedFNATP">-->
-<!--                <maxFileSize>10MB</maxFileSize>-->
-<!--            </timeBasedFileNamingAndTriggeringPolicy>-->
-<!--        </rollingPolicy>-->
-<!--    </appender>-->
-
-<!--    <appender name="DBFile" class="ch.qos.logback.core.rolling.RollingFileAppender">-->
-<!--        <file>${LOGS}/logger-DB.log</file>-->
-<!--        <encoder class="ch.qos.logback.classic.encoder.PatternLayoutEncoder">-->
-<!--            <Pattern>%d{ISO8601} %-5level %t %logger{36}: %msg%n%throwable</Pattern>-->
-<!--        </encoder>-->
-
-<!--        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">-->
-<!--            &lt;!&ndash; rollover daily and when the file reaches 10 MegaBytes &ndash;&gt;-->
-<!--            <fileNamePattern>${LOGS}/archived/logger-DB-%d{yyyy-MM-dd}.%i.log.zip-->
-<!--            </fileNamePattern>-->
-<!--            <timeBasedFileNamingAndTriggeringPolicy-->
-<!--                    class="ch.qos.logback.core.rolling.SizeAndTimeBasedFNATP">-->
-<!--                <maxFileSize>10MB</maxFileSize>-->
-<!--            </timeBasedFileNamingAndTriggeringPolicy>-->
-<!--        </rollingPolicy>-->
-<!--    </appender>-->
 
     <!-- LOG everything at INFO level -->
     <root level="info">
         <appender-ref ref="Console" />
+        <appender-ref ref="APPFile" />
     </root>
 
 
 
     <!-- org.springframework.web -->
 
-    <logger name="org.springframework.web" level="error" additivity="false">
+    <logger name="org.springframework.web" level="debug" additivity="false">
         <appender-ref ref="WEBFile" />
         <!--        <appender-ref ref="Console" />-->
     </logger>
-
-<!--    <logger name="org.springframework.web.servlet" level="error" additivity="false">-->
-<!--        <appender-ref ref="WEBFile" />-->
-<!--&lt;!&ndash;        <appender-ref ref="Console" />&ndash;&gt;-->
-<!--    </logger>-->
-
-<!--    <logger name="org.springframework.web.servlet.mvc.method.annotation.HttpEntityMethodProcessor" level="error" additivity="false">-->
-<!--        <appender-ref ref="WEBFile" />-->
-<!--&lt;!&ndash;        <appender-ref ref="Console" />&ndash;&gt;-->
-<!--    </logger>-->
-
-<!--    <logger name="org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerMapping" level="error" additivity="false">-->
-<!--        <appender-ref ref="WEBFile" />-->
-<!--&lt;!&ndash;        <appender-ref ref="Console" />&ndash;&gt;-->
-<!--    </logger>-->
 
 
     <!-- org.hibernate -->
@@ -110,15 +67,15 @@
 <!--        <appender-ref ref="Console" />-->
     </logger>
 
-<!--    <logger name="org.hibernate.type.descriptor.sql.BasicBinder" level="error" additivity="false">-->
-<!--        <appender-ref ref="DBFile" />-->
-<!--&lt;!&ndash;        <appender-ref ref="Console" />&ndash;&gt;-->
-<!--    </logger>-->
+
 
 
     <logger name="org.springframework.kafka" level="debug" additivity="false">
-        <appender-ref ref="KAFKAFile" />
         <appender-ref ref="Console" />
+    </logger>
+
+    <logger name="org.springframework.kafka.core" level="trace" additivity="false">
+        <appender-ref ref="KAFKAFile" />
     </logger>
 
 
