@@ -29,8 +29,8 @@ import java.util.Map;
 @Transactional(readOnly = true)
 public class Nas2HostService {
 
-//        private static final String FILE_PATH="/srv/logNAS2Host";
-    private static final String FILE_PATH = "logNAS2Host";
+        private static final String FILE_PATH="/srv/logNAS2Host";
+//    private static final String FILE_PATH = "logNAS2Host";
 
     private final Nas2HostRepository nas2HostRepository;
 
@@ -53,21 +53,36 @@ public class Nas2HostService {
 
     @Transactional(noRollbackFor = RuntimeException.class)
     public void saveResponse(String requestXML) {
+        long durParsing = -1;
+        long durDB = -1;
+        long durKafka = -1;
+
         try {
+            long startTimeParsing = System.nanoTime();
             Nas2Host nas2Host = parsingXML(requestXML, new Nas2Host());
+            long endTimeParsing = System.nanoTime();
+            durParsing = (endTimeParsing - startTimeParsing);
 
+            long startTimeDB = System.nanoTime();
             save(nas2Host);
+            long endTimeDB = System.nanoTime();
+            durDB = (endTimeDB - startTimeDB);
 
+
+            long startTimeKafka = System.nanoTime();
             kafkaService.sendMessage(requestXML, "NasToHost");
+            long endTimeKafka = System.nanoTime();
+            durKafka = (endTimeKafka - startTimeKafka);
+
 
             if (nas2Host.getERRCODE() != 0) {
                 throw new NasException(nas2Host.getERRTEXT());
             }
 
-            writeLogN2H(requestXML);
+            writeLogN2H(requestXML, durParsing, durDB, durKafka);
         } catch (Exception ex) {
             log.error(ex.toString());
-            writeLogN2H(requestXML, ex.getMessage());
+            writeLogN2H(requestXML, ex.getMessage(), durParsing, durDB, durKafka);
             throw ex;
         }
 
@@ -184,27 +199,34 @@ public class Nas2HostService {
         }
     }
 
-    private static void writeLogN2H(String request) {
+    private static void writeLogN2H(String request, long durParsing, long durDB, long durKafka) {
         BufferedWriter writer = null;
         try {
             writer = new BufferedWriter(new FileWriter(FILE_PATH, true));
             writer.write("Message date - " + LocalDateTime.now() + "\n\n");
+            writer.write("Duration parsing+validation: " + durParsing + "\n");
+            writer.write("Duration save in DB: " + durDB + "\n");
+            writer.write("Duration send to kafka: " + durKafka + "\n\n");
             writer.write("Request:" + "\n");
             writer.write(request + "\n\n");
             writer.write("============================================================================");
             writer.write(System.lineSeparator());
             writer.close();
         } catch (IOException e) {
+            log.error(e.toString());
             throw new RuntimeException(e);
         }
 
     }
 
-    private static void writeLogN2H(String request, String error) {
+    private static void writeLogN2H(String request, String error, long durParsing, long durDB, long durKafka) {
         BufferedWriter writer = null;
         try {
             writer = new BufferedWriter(new FileWriter(FILE_PATH, true));
             writer.write("Message date - " + LocalDateTime.now() + "\n\n");
+            writer.write("Duration parsing+validation: " + durParsing + "\n");
+            writer.write("Duration save in DB: " + durDB + "\n");
+            writer.write("Duration send to kafka: " + durKafka + "\n\n");
             writer.write("Request:" + "\n");
             writer.write(request + "\n\n");
             writer.write("Error:" + "\n");
@@ -213,6 +235,7 @@ public class Nas2HostService {
             writer.write(System.lineSeparator());
             writer.close();
         } catch (IOException e) {
+            log.error(e.toString());
             throw new RuntimeException(e);
         }
 

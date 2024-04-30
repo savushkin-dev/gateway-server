@@ -11,7 +11,6 @@ public class KafkaService {
 
     private final KafkaTemplate<String, String> kafkaTemplate;
 
-
     @Autowired
     public KafkaService(KafkaTemplate<String, String> kafkaTemplate) {
         this.kafkaTemplate = kafkaTemplate;
@@ -19,9 +18,7 @@ public class KafkaService {
 
 
     public void sendMessage(String message, String topicName) {
-        log.info("Sending : {} to {} topic", message, topicName);
-        log.info("--------------------------------");
-
         kafkaTemplate.send(topicName, message);
+//        log.error("Sending : {} to {} topic", message, topicName);
     }
 }
