@@ -26,7 +26,6 @@ import static org.springframework.security.config.Customizer.withDefaults;
 
 @Configuration
 @EnableWebSecurity
-
 @EnableMethodSecurity(securedEnabled = true, jsr250Enabled = true)
 public class SecurityConfig {
 
@@ -50,7 +49,7 @@ public class SecurityConfig {
                 .csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(auth -> auth
                                 .requestMatchers(HttpMethod.POST, "api/authentication/authenticate").permitAll()
-                                .requestMatchers(HttpMethod.POST, "api/authentication/registration").permitAll()
+//                                .requestMatchers(HttpMethod.POST, "api/authentication/registration").permitAll()
 
 //                                .requestMatchers("/test/**").permitAll()
 
