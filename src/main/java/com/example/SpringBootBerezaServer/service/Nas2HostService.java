@@ -166,7 +166,7 @@ public class Nas2HostService {
             return nas2Host;
 
         } catch (XMLStreamException e) {
-            throw new XMLParsingException(e.getMessage());
+            throw new XMLParsingException(e.toString());
         }
 
 

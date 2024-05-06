@@ -44,15 +44,13 @@ public class Host2NasService {
     private final RestTemplate restTemplate;
     private final Host2NasRepository host2NasRepository;
     private final KafkaService kafkaService;
-    private final EntityManager entityManager;
 
 
     @Autowired
-    public Host2NasService(RestTemplate restTemplate, Host2NasRepository host2NasRepository, KafkaService kafkaService, EntityManager entityManager) {
+    public Host2NasService(RestTemplate restTemplate, Host2NasRepository host2NasRepository, KafkaService kafkaService) {
         this.restTemplate = restTemplate;
         this.host2NasRepository = host2NasRepository;
         this.kafkaService = kafkaService;
-        this.entityManager = entityManager;
     }
 
 
@@ -135,7 +133,7 @@ public class Host2NasService {
                     request, String.class);
             responseXML = response.getBody();
         } catch (Exception e) {
-            throw new NasRemoteServerException("Exception when requesting to remote server!" + e.getMessage(), responseXML);
+            throw new NasRemoteServerException("Exception when requesting to remote server!" + e.toString(), responseXML);
         }
 
 
@@ -220,7 +218,7 @@ public class Host2NasService {
 
         } catch (XMLStreamException e) {
 //            System.out.println("Ошибка XMLStreamException!");
-            throw new XMLParsingException(e.getMessage());
+            throw new XMLParsingException(e.toString());
         }
 
 
