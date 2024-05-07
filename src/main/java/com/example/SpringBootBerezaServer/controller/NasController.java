@@ -28,7 +28,7 @@ public class NasController {
 
     @PostMapping(value = "/hosttonas", produces = MediaType.APPLICATION_XML_VALUE)
     public ResponseEntity<?> hosttonas(@RequestBody String requestXML) {
-        return ResponseEntity.ok(host2NasService.SendAndSave(requestXML));
+        return ResponseEntity.ok(host2NasService.sendAndSave(requestXML));
     }
 
 //    @PostMapping(value = "/hosttohost", produces = MediaType.APPLICATION_XML_VALUE)
