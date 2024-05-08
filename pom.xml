@@ -8,7 +8,7 @@
 		<version>3.1.3</version>
 		<relativePath/> <!-- lookup parent from repository -->
 	</parent>
-	<groupId>com.example</groupId>
+	<groupId>com.host</groupId>
 	<artifactId>SpringBoot-Bereza-Server</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
 	<name>SpringBoot-Bereza-Server</name>
@@ -132,6 +132,7 @@
 			<artifactId>h2</artifactId>
 			<scope>runtime</scope>
 		</dependency>
+
 
 
 	</dependencies>
