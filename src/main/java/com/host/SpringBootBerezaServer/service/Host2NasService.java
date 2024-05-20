@@ -4,6 +4,7 @@ import com.host.SpringBootBerezaServer.exceptions.NAS.NasException;
 import com.host.SpringBootBerezaServer.exceptions.NAS.NasRemoteServerException;
 import com.host.SpringBootBerezaServer.model.Host2Nas;
 import com.host.SpringBootBerezaServer.repositories.Host2NasRepository;
+import com.host.SpringBootBerezaServer.util.H2NLogging;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.*;
@@ -22,8 +23,6 @@ import java.util.*;
 @Transactional(readOnly = true)
 public class Host2NasService {
 
-        private static final String FILE_PATH="/srv/logHost2NAS";
-//    private static final String FILE_PATH = "logHost2NAS";
 
     private final String NAS_URL = "http://192.168.10.205:8082/api/hosttonas";
 
@@ -46,15 +45,10 @@ public class Host2NasService {
     }
 
 
-    public List<Host2Nas> findAll() {
-        return host2NasRepository.findAll();
-    }
-
     @Transactional
     public void save(Host2Nas message) {
         host2NasRepository.save(message);
     }
-
 
 
     @Transactional(noRollbackFor = RuntimeException.class)
@@ -92,13 +86,13 @@ public class Host2NasService {
                 throw new NasException(request.getERRTEXT());
             }
 
-            writeLogH2N(requestXML, responseXML, durParsing, durDB, durKafka);
+            H2NLogging.writeLogH2N(requestXML, responseXML, durParsing, durDB, durKafka);
 
             return responseXML + ";";
 
         } catch (Exception ex) {
             log.error(ex.toString());
-            writeLogH2N(requestXML, responseXML, ex.toString(), durParsing, durDB, durKafka);
+            H2NLogging.writeLogH2N(requestXML, responseXML, ex.toString(), durParsing, durDB, durKafka);
             throw ex;
         }
     }
@@ -109,8 +103,8 @@ public class Host2NasService {
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_XML);
 
-        headers.add("Authorization", tokenNas);
-//        headers.add("Authorization", tokenTest);
+//        headers.add("Authorization", tokenNas);
+        headers.add("Authorization", tokenTest);
 
         HttpEntity<String> request = new HttpEntity<>(requestXML, headers);
 
@@ -119,8 +113,8 @@ public class Host2NasService {
         ResponseEntity<String> response = null;
         try {
             response = restTemplate.postForEntity(
-                    NAS_URL,
-//                    "http://localhost:7592/api/hosttonasTest",
+//                    NAS_URL,
+                    "http://localhost:7592/api/hosttonasTest",
                     request, String.class);
             responseXML = response.getBody();
         } catch (Exception e) {
@@ -129,52 +123,6 @@ public class Host2NasService {
 
 
         return responseXML;
-    }
-
-
-
-    private static void writeLogH2N(String request, String response, long durParsing, long durDB, long durKafka) {
-        BufferedWriter writer = null;
-        try {
-            writer = new BufferedWriter(new FileWriter(FILE_PATH, true));
-            writer.write("Message date - " + LocalDateTime.now() + "\n\n");
-            writer.write("Duration parsing+validation: " + durParsing + "\n");
-            writer.write("Duration save in DB: " + durDB + "\n");
-            writer.write("Duration send to kafka: " + durKafka + "\n\n");
-            writer.write("Request:" + "\n");
-            writer.write(request + "\n\n");
-            writer.write("Response:" + "\n");
-            writer.write(response + "\n");
-            writer.write("============================================================================");
-            writer.write(System.lineSeparator());
-            writer.close();
-        } catch (IOException e) {
-            log.error(e.toString());
-            throw new RuntimeException(e);
-        }
-    }
-
-    private static void writeLogH2N(String request, String response, String error, long durParsing, long durDB, long durKafka) {
-        BufferedWriter writer = null;
-        try {
-            writer = new BufferedWriter(new FileWriter(FILE_PATH, true));
-            writer.write("Message date - " + LocalDateTime.now() + "\n\n");
-            writer.write("Duration parsing+validation: " + durParsing + "\n");
-            writer.write("Duration save in DB: " + durDB + "\n");
-            writer.write("Duration send to kafka: " + durKafka + "\n\n");
-            writer.write("Request:" + "\n");
-            writer.write(request + "\n\n");
-            writer.write("Response:" + "\n");
-            writer.write(response + "\n\n");
-            writer.write("Error:" + "\n");
-            writer.write(error + "\n");
-            writer.write("============================================================================");
-            writer.write(System.lineSeparator());
-            writer.close();
-        } catch (IOException e) {
-            log.error(e.toString());
-            throw new RuntimeException(e);
-        }
     }
 
 

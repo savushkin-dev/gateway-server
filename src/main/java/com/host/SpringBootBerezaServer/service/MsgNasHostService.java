@@ -140,7 +140,7 @@ public class MsgNasHostService {
     }
 
     public static DateTimeFormatter DATE_FORMAT = new DateTimeFormatterBuilder()
-            .appendPattern("yyyy-MM-dd HH:mm:ss")
+            .appendPattern("yyyyMMddHHmmss")
             .toFormatter();
 
 }
