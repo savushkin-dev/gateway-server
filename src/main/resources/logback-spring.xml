@@ -44,6 +44,20 @@
         </encoder>
     </appender>
 
+    <appender name="HostToNasFile" class="ch.qos.logback.core.FileAppender">
+        <file>${LOGS}/HostToNas.log</file>
+        <encoder>
+            <pattern>%d{ISO8601} %-5level %t %logger{36}: %msg%n%throwable</pattern>
+        </encoder>
+    </appender>
+
+    <appender name="NasToHostFile" class="ch.qos.logback.core.FileAppender">
+        <file>${LOGS}/NasToHost.log</file>
+        <encoder>
+            <pattern>%d{ISO8601} %-5level %t %logger{36}: %msg%n%throwable</pattern>
+        </encoder>
+    </appender>
+
 
     <!-- LOG everything at INFO level -->
     <root level="info">
@@ -79,5 +93,15 @@
     </logger>
 
 
+
+<!--    Логирование HostToNas-->
+    <logger name="com.host.SpringBootBerezaServer.util.H2NLogging" level="trace" additivity="false">
+        <appender-ref ref="HostToNasFile" />
+    </logger>
+
+<!--    Логирование NasToHost-->
+    <logger name="com.host.SpringBootBerezaServer.util.N2HLogging" level="trace" additivity="false">
+        <appender-ref ref="NasToHostFile" />
+    </logger>
 
 </configuration>
