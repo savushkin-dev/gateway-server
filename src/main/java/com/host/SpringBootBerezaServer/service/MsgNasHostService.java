@@ -34,7 +34,7 @@ public class MsgNasHostService {
         map.put("FACILITY", "");
         map.put("ACTION", "");
         map.put("SENDER", "");
-        map.put("RECEIVER", "");
+        map.put("RECIEVER", "");
 
         ArrayList<String> requiredFields = new ArrayList<>();
         requiredFields.add("MSGID");
@@ -47,18 +47,13 @@ public class MsgNasHostService {
             XMLInputFactory xmlInputFactory = XMLInputFactory.newInstance();
             XMLEventReader reader = xmlInputFactory.createXMLEventReader(new StringReader(xml));
 
+            String lastTagRead = "unknown";
 
             while (reader.hasNext()) {
                 XMLEvent nextEvent = reader.nextEvent();
                 if (nextEvent.isStartElement()) {
                     StartElement startElement = nextEvent.asStartElement();
 
-
-                    if (startElement.getName().getLocalPart().equals("ITEM") ||
-                            startElement.getName().getLocalPart().equals("SYSSTAT")) {
-                        containsMsgData = true;
-                        break; //выход из потока после окончания заголовка
-                    }
 
                     switch (startElement.getName().getLocalPart()) {
                         case "MSGID" -> map.put("MSGID", validateTag(reader));
@@ -68,19 +63,21 @@ public class MsgNasHostService {
                         case "FACILITY" -> map.put("FACILITY", validateTag(reader));
                         case "ACTION" -> map.put("ACTION", validateTag(reader));
                         case "SENDER" -> map.put("SENDER", validateTag(reader));
-                        case "RECEIVER" -> map.put("RECEIVER", validateTag(reader));
+                        case "RECIEVER" -> map.put("RECIEVER", validateTag(reader));
                     }
 
+                    if(startElement.getName().getLocalPart().equals(map.get("MSGTYPE")) &&
+                            !startElement.getName().getLocalPart().isEmpty() && lastTagRead.equals("RECIEVER")){
+                        containsMsgData = true;
+                        break;
+                    }
+
+                    lastTagRead = startElement.getName().getLocalPart();
                 }
+
             }
 
             obj.setERRTEXT("");
-
-            if(!containsMsgData){
-                obj.setERRCODE(400);
-                obj.setERRTEXT(obj.getERRTEXT() + "Message data is empty; ");
-            }
-
 
             ArrayList<String> errorFields = new ArrayList<>();
 
@@ -97,7 +94,12 @@ public class MsgNasHostService {
                 for (String x : errorFields) {
                     textError.append(x + "; ");
                 }
-                obj.setERRTEXT(textError.toString());
+                obj.setERRTEXT(obj.getERRTEXT() + textError.toString());
+            }
+
+            if(!containsMsgData){
+                obj.setERRCODE(400);
+                obj.setERRTEXT(obj.getERRTEXT() + "Message data is empty; ");
             }
 
 
@@ -108,7 +110,7 @@ public class MsgNasHostService {
             return obj;
 
         } catch (XMLStreamException e) {
-            throw new XMLParsingException(e.toString());
+            throw new XMLParsingException("Failed to parse message!");
         }
     }
 
@@ -121,7 +123,7 @@ public class MsgNasHostService {
             obj.setFACILITY(map.get("FACILITY"));
             obj.setACTION(map.get("ACTION"));
             obj.setSENDER(map.get("SENDER"));
-            obj.setRECEIVER(map.get("RECEIVER"));
+            obj.setRECEIVER(map.get("RECIEVER"));
             obj.setDT(LocalDateTime.now());
         } catch (Exception e) {
 //                obj.setERRCODE(400);
