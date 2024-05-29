@@ -1,10 +1,13 @@
 package com.host.SpringBootBerezaServer.model;
 
+import com.host.SpringBootBerezaServer.service.MsgNasHostService;
+import com.host.SpringBootBerezaServer.util.DateUtils;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.hibernate.type.descriptor.DateTimeUtils;
 
 import java.time.LocalDateTime;
 
@@ -76,5 +79,22 @@ public class MsgNasHost {
         this.ACTION = ACTION;
         this.SENDER = SENDER;
         this.RECEIVER = RECEIVER;
+    }
+
+    public void setTIMESTAMP(String TIMESTAMP) {
+        try {
+            this.TIMESTAMP = LocalDateTime.parse(TIMESTAMP, DateUtils.DATE_FORMAT);
+        } catch (Exception e){
+            this.setERRCODE(400);
+            this.setERRTEXT(this.getERRTEXT() + "Incorrect TIMESTAMP; ");
+        }
+    }
+
+    public void setACTION(String ACTION) {
+        if(!ACTION.equalsIgnoreCase("SET") && !ACTION.equalsIgnoreCase("DELETE")){
+            this.setERRCODE(400);
+            this.setERRTEXT(this.getERRTEXT() + "Incorrect ACTION, must be SET or DELETE; ");
+        }
+        this.ACTION = ACTION;
     }
 }
