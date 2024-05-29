@@ -15,7 +15,7 @@ public class N2HLogging {
     }
 
     public static void writeLogN2H(String request, String error, long durParsing, long durDB, long durKafka) {
-        log.info("\nDuration parsing+validation: " + durParsing + "\n"
+        log.error("\nDuration parsing+validation: " + durParsing + "\n"
                 + "Duration save in DB: " + durDB + "\n"
                 + "Duration send to kafka: " + durKafka + "\n\n"
                 + "Request:" + "\n"

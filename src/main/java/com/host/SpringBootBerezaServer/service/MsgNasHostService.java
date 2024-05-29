@@ -66,8 +66,8 @@ public class MsgNasHostService {
                         case "RECIEVER" -> map.put("RECIEVER", validateTag(reader));
                     }
 
-                    if(startElement.getName().getLocalPart().equals(map.get("MSGTYPE")) &&
-                            !startElement.getName().getLocalPart().isEmpty() && lastTagRead.equals("RECIEVER")){
+                    if (startElement.getName().getLocalPart().equals(map.get("MSGTYPE")) &&
+                            !startElement.getName().getLocalPart().isEmpty() && lastTagRead.equals("RECIEVER")) {
                         containsMsgData = true;
                         break;
                     }
@@ -97,9 +97,9 @@ public class MsgNasHostService {
                 obj.setERRTEXT(obj.getERRTEXT() + textError.toString());
             }
 
-            if(!containsMsgData){
+            if (!containsMsgData) {
                 obj.setERRCODE(400);
-                obj.setERRTEXT(obj.getERRTEXT() + "Message data is empty; ");
+                obj.setERRTEXT(obj.getERRTEXT() + "Incorrect Message data; ");
             }
 
 
@@ -115,18 +115,36 @@ public class MsgNasHostService {
     }
 
     private MsgNasHost assignFields(MsgNasHost obj, Map<String, String> map) {
+//        try {
+//            obj.setTIMESTAMP(LocalDateTime.parse(map.get("TIMESTAMP"), MsgNasHostService.DATE_FORMAT));
+//        } catch (Exception e){
+//            obj.setERRCODE(400);
+//            obj.setERRTEXT(obj.getERRTEXT() + "Incorrect TIMESTAMP; ");
+//        }
+//
+//        try {
+//            if(!map.get("ACTION").equalsIgnoreCase("SET") && !map.get("ACTION").equalsIgnoreCase("DELETE")){
+//                obj.setERRCODE(400);
+//                obj.setERRTEXT(obj.getERRTEXT() + "Incorrect TIMESTAMP; ");
+//            }
+//            obj.setACTION(map.get("ACTION"));
+//        } catch (Exception e){
+//            obj.setERRCODE(400);
+//            obj.setERRTEXT(obj.getERRTEXT() + "Incorrect TIMESTAMP; ");
+//        }
+
         try {
             obj.setMSGID(map.get("MSGID"));
             obj.setMSGTYPE(map.get("MSGTYPE"));
             obj.setREPLYTO(map.get("REPLYTO"));
-            obj.setTIMESTAMP(LocalDateTime.parse(map.get("TIMESTAMP"), MsgNasHostService.DATE_FORMAT));
+            obj.setTIMESTAMP(map.get("TIMESTAMP"));
             obj.setFACILITY(map.get("FACILITY"));
             obj.setACTION(map.get("ACTION"));
             obj.setSENDER(map.get("SENDER"));
             obj.setRECEIVER(map.get("RECIEVER"));
             obj.setDT(LocalDateTime.now());
         } catch (Exception e) {
-//                obj.setERRCODE(400);
+            obj.setERRCODE(400);
             obj.setERRTEXT(obj.getERRTEXT() + "Not all fields are filled in correctly; ");
         }
         return obj;
