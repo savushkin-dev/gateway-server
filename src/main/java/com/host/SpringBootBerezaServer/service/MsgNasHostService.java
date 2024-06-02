@@ -2,6 +2,7 @@ package com.host.SpringBootBerezaServer.service;
 
 import com.host.SpringBootBerezaServer.exceptions.XMLParsingException;
 import com.host.SpringBootBerezaServer.model.MsgNasHost;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import javax.xml.stream.XMLEventReader;
@@ -17,6 +18,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
+@Slf4j
 @Service
 public class MsgNasHostService {
 
@@ -106,13 +108,13 @@ public class MsgNasHostService {
             obj = assignFields(obj, map);
             obj.setDATA(xml);
 
-
             return obj;
 
         } catch (XMLStreamException e) {
             throw new XMLParsingException("Failed to parse message!");
         }
     }
+
 
     private MsgNasHost assignFields(MsgNasHost obj, Map<String, String> map) {
 
@@ -142,17 +144,53 @@ public class MsgNasHostService {
         }
     }
 
-    public static DateTimeFormatter DATE_FORMAT = new DateTimeFormatterBuilder()
-            .appendPattern("yyyyMMddHHmmss")
-            .toFormatter();
 
-    public boolean testReqCheck(MsgNasHost msgNasHost){
+    public boolean testReqCheck(MsgNasHost msgNasHost) {
         if (msgNasHost.getFACILITY().equalsIgnoreCase("TEST") ||
-                msgNasHost.getRECEIVER().equalsIgnoreCase("TEST")){
+                msgNasHost.getRECEIVER().equalsIgnoreCase("TEST")) {
             return true;
         } else {
             return false;
         }
+    }
+
+    public boolean testReqCheck(String xml) {
+
+        String FACILITY = "unknown";
+        String RECIEVER = "unknown";
+
+        try {
+            XMLInputFactory xmlInputFactory = XMLInputFactory.newInstance();
+            XMLEventReader reader = xmlInputFactory.createXMLEventReader(new StringReader(xml));
+
+            while (reader.hasNext()) {
+                XMLEvent nextEvent = reader.nextEvent();
+                if (nextEvent.isStartElement()) {
+                    StartElement startElement = nextEvent.asStartElement();
+
+                    switch (startElement.getName().getLocalPart()) {
+                        case "FACILITY" -> FACILITY = validateTag(reader);
+                        case "RECIEVER" -> RECIEVER = validateTag(reader);
+                    }
+                }
+
+                if (!FACILITY.equals("unknown") && !RECIEVER.equals("unknown")){
+                    break;
+                }
+
+            }
+        } catch (XMLStreamException e) {
+            log.error(e.toString());
+            throw new RuntimeException(e);
+        }
+
+        if (FACILITY.equalsIgnoreCase("TEST") ||
+                RECIEVER.equalsIgnoreCase("TEST")) {
+            return true;
+        } else {
+            return false;
+        }
+
     }
 
 }
