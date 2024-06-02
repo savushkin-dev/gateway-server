@@ -2,23 +2,14 @@ package com.host.SpringBootBerezaServer.service;
 
 import com.host.SpringBootBerezaServer.exceptions.NAS.NasException;
 import com.host.SpringBootBerezaServer.model.Host2Nas;
+import com.host.SpringBootBerezaServer.model.MsgNasHost;
 import com.host.SpringBootBerezaServer.repositories.Host2NasRepository;
+import com.host.SpringBootBerezaServer.repositories.NasHostTestRepository;
 import com.host.SpringBootBerezaServer.util.H2NLogging;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.client.RestTemplate;
-
-
-import com.host.SpringBootBerezaServer.exceptions.NAS.NasRemoteServerException;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpEntity;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
-import org.springframework.stereotype.Service;
-import org.springframework.web.client.RestTemplate;
 
 @Slf4j
 @Service
@@ -26,14 +17,17 @@ import org.springframework.web.client.RestTemplate;
 public class Host2NasService {
 
     private final Host2NasRepository host2NasRepository;
+
+    private final NasHostTestRepository nasHostTestRepository;
     private final KafkaService kafkaService;
     private final MsgNasHostService msgNasHostService;
     private final NasService nasService;
 
 
     @Autowired
-    public Host2NasService(Host2NasRepository host2NasRepository, KafkaService kafkaService, MsgNasHostService msgNasHostService, NasService nasService) {
+    public Host2NasService(Host2NasRepository host2NasRepository, NasHostTestRepository nasHostTestRepository, KafkaService kafkaService, MsgNasHostService msgNasHostService, NasService nasService) {
         this.host2NasRepository = host2NasRepository;
+        this.nasHostTestRepository = nasHostTestRepository;
         this.kafkaService = kafkaService;
         this.msgNasHostService = msgNasHostService;
         this.nasService = nasService;
@@ -41,8 +35,20 @@ public class Host2NasService {
 
 
     @Transactional
-    public void save(Host2Nas message) {
-        host2NasRepository.save(message);
+    public void save(MsgNasHost msgNasHost) {
+        if(msgNasHostService.testReqCheck(msgNasHost)){
+            nasHostTestRepository.save(msgNasHost.convertToNasHostTest());
+        } else {
+            host2NasRepository.save(msgNasHost.convertToHost2Nas());
+        }
+    }
+
+    public void sendToKafka(MsgNasHost msgNasHost, String xml) {
+        if(msgNasHostService.testReqCheck(msgNasHost)){
+            kafkaService.sendMessage(xml, "nhtest");
+        } else {
+            kafkaService.sendMessage(xml, "HostToNas");
+        }
     }
 
 
@@ -54,31 +60,36 @@ public class Host2NasService {
 
 
         String responseXML = "-";
-        Host2Nas request = new Host2Nas();
+
         try {
 
             long startTimeParsing = System.nanoTime();
-            request = (Host2Nas) msgNasHostService.parsingXML(requestXML, request);
+            MsgNasHost msgNasHost = msgNasHostService.parsingXML(requestXML, new MsgNasHost());
             long endTimeParsing = System.nanoTime();
             durParsing = (endTimeParsing - startTimeParsing);
 
 
             long startTimeDB = System.nanoTime();
-            save(request);
+            save(msgNasHost);
             long endTimeDB = System.nanoTime();
             durDB = (endTimeDB - startTimeDB);
 
+
             long startTimeKafka = System.nanoTime();
-            kafkaService.sendMessage(requestXML, "HostToNas");
+            sendToKafka(msgNasHost, requestXML);
             long endTimeKafka = System.nanoTime();
             durKafka = (endTimeKafka - startTimeKafka);
 
 
-            responseXML = nasService.callNas(requestXML);
+            if(msgNasHostService.testReqCheck(msgNasHost)){
+                responseXML = "-";
+            } else {
+                responseXML = nasService.callNas(requestXML);
+            }
 
 
-            if (request.getERRCODE() != 0) {
-                throw new NasException(request.getERRTEXT());
+            if (msgNasHost.getERRCODE() != 0) {
+                throw new NasException(msgNasHost.getERRTEXT());
             }
 
             H2NLogging.writeLogH2N(requestXML, responseXML, durParsing, durDB, durKafka);

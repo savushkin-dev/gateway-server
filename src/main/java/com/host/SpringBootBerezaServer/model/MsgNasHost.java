@@ -97,4 +97,26 @@ public class MsgNasHost {
         }
         this.ACTION = ACTION;
     }
+
+
+    public Nas2Host convertToNat2Host() {
+        return new Nas2Host(this.getF_ID(), this.getMSGID(), this.getMSGTYPE(), this.getREPLYTO(),
+                this.getTIMESTAMP(), this.getFACILITY(), this.getACTION(), this.getSENDER(), this.getRECEIVER(),
+                this.getDATA(), this.getSID(), this.getSTATUS(), this.getTEST(), this.getERRCODE(),
+                this.getERRTEXT(), this.getDT(), this.USERID);
+    }
+
+    public NasHostTest convertToNasHostTest() {
+        return new NasHostTest(this.getF_ID(), this.getMSGID(), this.getMSGTYPE(), this.getREPLYTO(),
+                this.getTIMESTAMP(), this.getFACILITY(), this.getACTION(), this.getSENDER(), this.getRECEIVER(),
+                this.getDATA(), this.getSID(), this.getSTATUS(), this.getTEST(), this.getERRCODE(),
+                this.getERRTEXT(), this.getDT(), this.USERID);
+    }
+
+    public Host2Nas convertToHost2Nas() {
+        return new Host2Nas(this.getF_ID(), this.getMSGID(), this.getMSGTYPE(), this.getREPLYTO(),
+                this.getTIMESTAMP(), this.getFACILITY(), this.getACTION(), this.getSENDER(), this.getRECEIVER(),
+                this.getDATA(), this.getSID(), this.getSTATUS(), this.getTEST(), this.getERRCODE(),
+                this.getERRTEXT(), this.getDT(), this.USERID);
+    }
 }

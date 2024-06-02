@@ -17,4 +17,9 @@ public class KafkaTopic {
     public NewTopic hostToNas() {
         return TopicBuilder.name("HostToNas").partitions(1).build();
     }
+
+    @Bean
+    public NewTopic nasHostTest() {
+        return TopicBuilder.name("nhtest").partitions(1).build();
+    }
 }

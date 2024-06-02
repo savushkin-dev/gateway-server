@@ -36,9 +36,8 @@ public class NasService {
 
         String responseXML = "-";
 
-        ResponseEntity<String> response = null;
         try {
-            response = restTemplate.postForEntity(
+            ResponseEntity<String> response = restTemplate.postForEntity(
 //                    NAS_URL,
                     "http://localhost:7592/api/hosttonasTest",
                     request, String.class);
