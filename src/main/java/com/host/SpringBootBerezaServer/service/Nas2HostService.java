@@ -7,6 +7,7 @@ import com.host.SpringBootBerezaServer.model.NasHostTest;
 import com.host.SpringBootBerezaServer.repositories.Nas2HostRepository;
 import com.host.SpringBootBerezaServer.repositories.NasHostTestRepository;
 import com.host.SpringBootBerezaServer.util.N2HLogging;
+import com.host.SpringBootBerezaServer.util.N2HTestLogging;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -57,6 +58,8 @@ public class Nas2HostService {
         long durDB = -1;
         long durKafka = -1;
 
+        boolean isTest = msgNasHostService.testReqCheck(requestXML);
+
         try {
             long startTimeParsing = System.nanoTime();
             MsgNasHost msgNasHost = msgNasHostService.parsingXML(requestXML, new MsgNasHost());
@@ -80,10 +83,20 @@ public class Nas2HostService {
                 throw new NasException(msgNasHost.getERRTEXT());
             }
 
-            N2HLogging.writeLogN2H(requestXML, durParsing, durDB, durKafka);
+
+            if(isTest){
+                N2HTestLogging.writeLogN2H(requestXML, durParsing, durDB, durKafka);
+            } else {
+                N2HLogging.writeLogN2H(requestXML, durParsing, durDB, durKafka);
+            }
+
         } catch (Exception ex) {
             log.error(ex.toString());
-            N2HLogging.writeLogN2H(requestXML, ex.toString(), durParsing, durDB, durKafka);
+            if(isTest){
+                N2HTestLogging.writeLogN2H(requestXML, durParsing, durDB, durKafka);
+            } else {
+                N2HLogging.writeLogN2H(requestXML, durParsing, durDB, durKafka);
+            }
             throw ex;
         }
 
