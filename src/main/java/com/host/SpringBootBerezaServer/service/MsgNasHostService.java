@@ -115,23 +115,6 @@ public class MsgNasHostService {
     }
 
     private MsgNasHost assignFields(MsgNasHost obj, Map<String, String> map) {
-//        try {
-//            obj.setTIMESTAMP(LocalDateTime.parse(map.get("TIMESTAMP"), MsgNasHostService.DATE_FORMAT));
-//        } catch (Exception e){
-//            obj.setERRCODE(400);
-//            obj.setERRTEXT(obj.getERRTEXT() + "Incorrect TIMESTAMP; ");
-//        }
-//
-//        try {
-//            if(!map.get("ACTION").equalsIgnoreCase("SET") && !map.get("ACTION").equalsIgnoreCase("DELETE")){
-//                obj.setERRCODE(400);
-//                obj.setERRTEXT(obj.getERRTEXT() + "Incorrect TIMESTAMP; ");
-//            }
-//            obj.setACTION(map.get("ACTION"));
-//        } catch (Exception e){
-//            obj.setERRCODE(400);
-//            obj.setERRTEXT(obj.getERRTEXT() + "Incorrect TIMESTAMP; ");
-//        }
 
         try {
             obj.setMSGID(map.get("MSGID"));
@@ -162,5 +145,14 @@ public class MsgNasHostService {
     public static DateTimeFormatter DATE_FORMAT = new DateTimeFormatterBuilder()
             .appendPattern("yyyyMMddHHmmss")
             .toFormatter();
+
+    public boolean testReqCheck(MsgNasHost msgNasHost){
+        if (msgNasHost.getFACILITY().equalsIgnoreCase("TEST") ||
+                msgNasHost.getRECEIVER().equalsIgnoreCase("TEST")){
+            return true;
+        } else {
+            return false;
+        }
+    }
 
 }

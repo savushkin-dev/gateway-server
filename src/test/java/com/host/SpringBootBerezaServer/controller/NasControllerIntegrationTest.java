@@ -44,10 +44,10 @@ public class NasControllerIntegrationTest {
                 "<MSGTYPE>SYSSTAT</MSGTYPE>" +
                 "<REPLYTO>183</REPLYTO>" +
                 "<TIMESTAMP>20240516115447</TIMESTAMP>" +
-                "<FACILITY>S</FACILITY>" +
+                "<FACILITY>TEST</FACILITY>" +
                 "<ACTION>SET</ACTION>" +
                 "<SENDER>NAS</SENDER>" +
-                "<RECIEVER>S</RECIEVER>" +
+                "<RECIEVER>TEST</RECIEVER>" +
                 "<SYSSTAT>" +
                 "<ERROR_CODE>failed</ERROR_CODE>" +
                 "<DESCRIPTION> Nepoznata vrsta poruke: ASN_LU</DESCRIPTION>" +
@@ -58,6 +58,8 @@ public class NasControllerIntegrationTest {
                 "<description>OK</description>" +
                 "<error_code>0</error_code>" +
                 "</Sysstat>";
+
+
 
         this.mvc.perform(post("/api/nastohost")
                         .accept(MediaType.APPLICATION_XML)
@@ -75,10 +77,10 @@ public class NasControllerIntegrationTest {
                 "<MSGTYPE>SYSSTAT</MSGTYPE>" +
                 "<REPLYTO>183</REPLYTO>" +
                 "<TIMESTAMP>20240516115447</TIMESTAMP>" +
-                "<FACILITY>S</FACILITY>" +
+                "<FACILITY>TEST</FACILITY>" +
                 "<ACTION>SET</ACTION>" +
                 "<SENDER>NAS</SENDER>" +
-                "<RECIEVER>S</RECIEVER>" +
+                "<RECIEVER>TEST</RECIEVER>" +
                 "<SYSSTAT>" +
                 "<ERROR_CODE>0</ERROR_CODE>" +
                 "<DESCRIPTION>ok</DESCRIPTION>" +
@@ -106,10 +108,10 @@ public class NasControllerIntegrationTest {
                 "<MSGTYPE></MSGTYPE>" +
                 "<REPLYTO>183</REPLYTO>" +
                 "<TIMESTAMP>20240516115447</TIMESTAMP>" +
-                "<FACILITY>S</FACILITY>" +
+                "<FACILITY>TEST</FACILITY>" +
                 "<ACTION>SET</ACTION>" +
                 "<SENDER>NAS</SENDER>" +
-                "<RECIEVER>S</RECIEVER>" +
+                "<RECIEVER>TEST</RECIEVER>" +
                 "<SYSSTAT>" +
                 "<ERROR_CODE>0</ERROR_CODE>" +
                 "<DESCRIPTION>ok</DESCRIPTION>" +
@@ -137,10 +139,10 @@ public class NasControllerIntegrationTest {
                 "<MSGTYPE>SYSSTAT</MSGTYPE>" +
                 "<REPLYTO>183</REPLYTO>" +
                 "<TIMESTAMP></TIMESTAMP>" +
-                "<FACILITY>S</FACILITY>" +
+                "<FACILITY>TEST</FACILITY>" +
                 "<ACTION>SET</ACTION>" +
                 "<SENDER>NAS</SENDER>" +
-                "<RECIEVER>S</RECIEVER>" +
+                "<RECIEVER>TEST</RECIEVER>" +
                 "<SYSSTAT>" +
                 "<ERROR_CODE>0</ERROR_CODE>" +
                 "<DESCRIPTION>ok</DESCRIPTION>" +
@@ -168,10 +170,10 @@ public class NasControllerIntegrationTest {
                 "<MSGTYPE>SYSSTAT</MSGTYPE>" +
                 "<REPLYTO>183</REPLYTO>" +
                 "<TIMESTAMP>2024-05-16 11:54:47</TIMESTAMP>" +
-                "<FACILITY>S</FACILITY>" +
+                "<FACILITY>TEST</FACILITY>" +
                 "<ACTION>SET</ACTION>" +
                 "<SENDER>NAS</SENDER>" +
-                "<RECIEVER>S</RECIEVER>" +
+                "<RECIEVER>TEST</RECIEVER>" +
                 "<SYSSTAT>" +
                 "<ERROR_CODE>0</ERROR_CODE>" +
                 "<DESCRIPTION>ok</DESCRIPTION>" +
@@ -199,10 +201,10 @@ public class NasControllerIntegrationTest {
                 "<MSGTYPE>SYSSTAT</MSGTYPE>" +
                 "<REPLYTO>183</REPLYTO>" +
                 "<TIMESTAMP>20240516115447</TIMESTAMP>" +
-                "<FACILITY>S</FACILITY>" +
+                "<FACILITY>TEST</FACILITY>" +
                 "<ACTION>SET1</ACTION>" +
                 "<SENDER>NAS</SENDER>" +
-                "<RECIEVER>S</RECIEVER>" +
+                "<RECIEVER>TEST</RECIEVER>" +
                 "<SYSSTAT>" +
                 "<ERROR_CODE>0</ERROR_CODE>" +
                 "<DESCRIPTION>ok</DESCRIPTION>" +
@@ -230,10 +232,10 @@ public class NasControllerIntegrationTest {
                 "<MSGTYPE>SYSSTAT1</MSGTYPE>" +
                 "<REPLYTO>183</REPLYTO>" +
                 "<TIMESTAMP>20240516115447</TIMESTAMP>" +
-                "<FACILITY>S</FACILITY>" +
+                "<FACILITY>TEST</FACILITY>" +
                 "<ACTION>SET</ACTION>" +
                 "<SENDER>NAS</SENDER>" +
-                "<RECIEVER>S</RECIEVER>" +
+                "<RECIEVER>TEST</RECIEVER>" +
                 "<SYSSTAT>" +
                 "<ERROR_CODE>0</ERROR_CODE>" +
                 "<DESCRIPTION>ok</DESCRIPTION>" +
@@ -261,10 +263,10 @@ public class NasControllerIntegrationTest {
                 "<MSGTYPE>SYSSTAT</MSGTYPE>" +
                 "<REPLYTO>183</REPLYTO>" +
                 "<TIMESTAMP>20240516115447</TIMESTAMP>" +
-                "<FACILITY>S</FACILITY>" +
+                "<FACILITY>TEST</FACILITY>" +
                 "<ACTION>SET</ACTION>" +
                 "<SENDER>NAS</SENDER>" +
-                "<RECIEVER>S</RECIEVER>" +
+                "<RECIEVER>TEST</RECIEVER>" +
                 "<SYSSTAT1>" +
                 "<ERROR_CODE>0</ERROR_CODE>" +
                 "<DESCRIPTION>ok</DESCRIPTION>" +
@@ -292,16 +294,15 @@ public class NasControllerIntegrationTest {
                 "<MSGTYPE>SYSSTAT</MSGTYPE>" +
                 "<REPLYTO></REPLYTO>" +
                 "<TIMESTAMP>20240516115447</TIMESTAMP>" +
-                "<FACILITY>NAS</FACILITY>" +
+                "<FACILITY>TEST</FACILITY>" +
                 "<ACTION>SET</ACTION>" +
                 "<SENDER>S</SENDER>" +
-                "<RECIEVER>NAS</RECIEVER>" +
+                "<RECIEVER>TEST</RECIEVER>" +
                 "<SYSSTAT>" +
                 "<ERROR_CODE>0</ERROR_CODE>" +
                 "<DESCRIPTION>ok</DESCRIPTION>" +
                 "</SYSSTAT>" +
                 "</MESSAGE>";
-
 
         given(this.nasService.callNas(reqBody)).willReturn(reqBody);
 
@@ -320,10 +321,10 @@ public class NasControllerIntegrationTest {
                 "<MSGTYPE>SYSSTAT</MSGTYPE>" +
                 "<REPLYTO></REPLYTO>" +
                 "<TIMESTAMP>20240516115447</TIMESTAMP>" +
-                "<FACILITY>NAS</FACILITY>" +
+                "<FACILITY>TEST</FACILITY>" +
                 "<ACTION>SET</ACTION>" +
                 "<SENDER>S</SENDER>" +
-                "<RECIEVER>NAS</RECIEVER>" +
+                "<RECIEVER>TEST</RECIEVER>" +
                 "<SYSSTAT>" +
                 "<ERROR_CODE>0</ERROR_CODE>" +
                 "<DESCRIPTION>ok</DESCRIPTION>" +
@@ -353,10 +354,10 @@ public class NasControllerIntegrationTest {
                 "<MSGTYPE></MSGTYPE>" +
                 "<REPLYTO></REPLYTO>" +
                 "<TIMESTAMP>20240516115447</TIMESTAMP>" +
-                "<FACILITY>NAS</FACILITY>" +
+                "<FACILITY>TEST</FACILITY>" +
                 "<ACTION>SET</ACTION>" +
                 "<SENDER>S</SENDER>" +
-                "<RECIEVER>NAS</RECIEVER>" +
+                "<RECIEVER>TEST</RECIEVER>" +
                 "<SYSSTAT>" +
                 "<ERROR_CODE>0</ERROR_CODE>" +
                 "<DESCRIPTION>ok</DESCRIPTION>" +
@@ -386,10 +387,10 @@ public class NasControllerIntegrationTest {
                 "<MSGTYPE>SYSSTAT</MSGTYPE>" +
                 "<REPLYTO></REPLYTO>" +
                 "<TIMESTAMP></TIMESTAMP>" +
-                "<FACILITY>NAS</FACILITY>" +
+                "<FACILITY>TEST</FACILITY>" +
                 "<ACTION>SET</ACTION>" +
                 "<SENDER>S</SENDER>" +
-                "<RECIEVER>NAS</RECIEVER>" +
+                "<RECIEVER>TEST</RECIEVER>" +
                 "<SYSSTAT>" +
                 "<ERROR_CODE>0</ERROR_CODE>" +
                 "<DESCRIPTION>ok</DESCRIPTION>" +
@@ -419,10 +420,10 @@ public class NasControllerIntegrationTest {
                 "<MSGTYPE>SYSSTAT</MSGTYPE>" +
                 "<REPLYTO></REPLYTO>" +
                 "<TIMESTAMP>2024-05-16 11:54:47</TIMESTAMP>" +
-                "<FACILITY>NAS</FACILITY>" +
+                "<FACILITY>TEST</FACILITY>" +
                 "<ACTION>SET</ACTION>" +
                 "<SENDER>S</SENDER>" +
-                "<RECIEVER>NAS</RECIEVER>" +
+                "<RECIEVER>TEST</RECIEVER>" +
                 "<SYSSTAT>" +
                 "<ERROR_CODE>0</ERROR_CODE>" +
                 "<DESCRIPTION>ok</DESCRIPTION>" +
@@ -452,10 +453,10 @@ public class NasControllerIntegrationTest {
                 "<MSGTYPE>SYSSTAT</MSGTYPE>" +
                 "<REPLYTO></REPLYTO>" +
                 "<TIMESTAMP>20240516115447</TIMESTAMP>" +
-                "<FACILITY>NAS</FACILITY>" +
+                "<FACILITY>TEST</FACILITY>" +
                 "<ACTION>SET1</ACTION>" +
                 "<SENDER>S</SENDER>" +
-                "<RECIEVER>NAS</RECIEVER>" +
+                "<RECIEVER>TEST</RECIEVER>" +
                 "<SYSSTAT>" +
                 "<ERROR_CODE>0</ERROR_CODE>" +
                 "<DESCRIPTION>ok</DESCRIPTION>" +
@@ -485,10 +486,10 @@ public class NasControllerIntegrationTest {
                 "<MSGTYPE>SYSSTAT1</MSGTYPE>" +
                 "<REPLYTO></REPLYTO>" +
                 "<TIMESTAMP>20240516115447</TIMESTAMP>" +
-                "<FACILITY>NAS</FACILITY>" +
+                "<FACILITY>TEST</FACILITY>" +
                 "<ACTION>SET</ACTION>" +
                 "<SENDER>S</SENDER>" +
-                "<RECIEVER>NAS</RECIEVER>" +
+                "<RECIEVER>TEST</RECIEVER>" +
                 "<SYSSTAT>" +
                 "<ERROR_CODE>0</ERROR_CODE>" +
                 "<DESCRIPTION>ok</DESCRIPTION>" +
@@ -518,10 +519,10 @@ public class NasControllerIntegrationTest {
                 "<MSGTYPE>SYSSTAT</MSGTYPE>" +
                 "<REPLYTO></REPLYTO>" +
                 "<TIMESTAMP>20240516115447</TIMESTAMP>" +
-                "<FACILITY>NAS</FACILITY>" +
+                "<FACILITY>TEST</FACILITY>" +
                 "<ACTION>SET</ACTION>" +
                 "<SENDER>S</SENDER>" +
-                "<RECIEVER>NAS</RECIEVER>" +
+                "<RECIEVER>TEST</RECIEVER>" +
                 "<SYSSTAT1>" +
                 "<ERROR_CODE>0</ERROR_CODE>" +
                 "<DESCRIPTION>ok</DESCRIPTION>" +
