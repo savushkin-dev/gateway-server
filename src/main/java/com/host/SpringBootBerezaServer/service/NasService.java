@@ -29,8 +29,8 @@ public class NasService {
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_XML);
 
-//        headers.add("Authorization", tokenNas);
-        headers.add("Authorization", tokenTest);
+        headers.add("Authorization", tokenNas);
+//        headers.add("Authorization", tokenTest);
 
         HttpEntity<String> request = new HttpEntity<>(requestXML, headers);
 
@@ -38,8 +38,8 @@ public class NasService {
 
         try {
             ResponseEntity<String> response = restTemplate.postForEntity(
-//                    NAS_URL,
-                    "http://localhost:7592/api/hosttonasTest",
+                    NAS_URL,
+//                    "http://localhost:7592/api/hosttonasTest",
                     request, String.class);
             responseXML = response.getBody();
         } catch (Exception e) {
