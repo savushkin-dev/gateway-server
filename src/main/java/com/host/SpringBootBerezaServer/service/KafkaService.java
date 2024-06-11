@@ -16,9 +16,7 @@ public class KafkaService {
         this.kafkaTemplate = kafkaTemplate;
     }
 
-
     public void sendMessage(String message, String topicName) {
         kafkaTemplate.send(topicName, message);
-//        log.error("Sending : {} to {} topic", message, topicName);
     }
 }
