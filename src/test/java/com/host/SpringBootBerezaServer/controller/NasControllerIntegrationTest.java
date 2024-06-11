@@ -2,7 +2,7 @@ package com.host.SpringBootBerezaServer.controller;
 
 import com.host.SpringBootBerezaServer.SpringBootBerezaServerApplication;
 import com.host.SpringBootBerezaServer.service.*;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -24,7 +24,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @AutoConfigureMockMvc
 @TestPropertySource(
         locations = "classpath:application-test.properties")
-public class NasControllerIntegrationTest {
+class NasControllerIntegrationTest {
 
     private final String TEST_TOKEN = "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJVc2VyIGRldGFpbHMiLCJ1c2VybmFtZSI6InRlc3RBY2NvdW50IiwiaWF0IjoxNzE2NzE4NDUyLCJpc3MiOiJTcHJpbmctQmVyZXphLVNlcnZlciIsImV4cCI6MTc0ODI1NDQ1Mn0._6ngENuAIbPKVx1s3xN3oJfHUHbO3VH9WTGNDPN1vh0";
 
