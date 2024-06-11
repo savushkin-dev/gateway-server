@@ -85,7 +85,7 @@ public class Host2NasService {
             durKafka = (endTimeKafka - startTimeKafka);
 
 
-            if(msgNasHostService.testReqCheck(msgNasHost)){
+            if(isTestReq){
                 responseXML = "-";
             } else {
                 responseXML = nasService.callNas(requestXML);

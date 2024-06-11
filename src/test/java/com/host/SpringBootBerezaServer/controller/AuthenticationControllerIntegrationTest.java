@@ -3,8 +3,8 @@ package com.host.SpringBootBerezaServer.controller;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.host.SpringBootBerezaServer.SpringBootBerezaServerApplication;
 import com.host.SpringBootBerezaServer.dto.LoginRequestDTO;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -24,14 +24,14 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @AutoConfigureMockMvc(addFilters = false)
 @TestPropertySource(
         locations = "classpath:application-test.properties")
-public class AuthenticationControllerIntegrationTest {
+class AuthenticationControllerIntegrationTest {
 
     @Autowired
     private MockMvc mvc;
 
     private ObjectMapper mapper;
 
-    @Before
+    @BeforeEach
     public void before(){
         mapper = new ObjectMapper();
     }
