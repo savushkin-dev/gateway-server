@@ -20,6 +20,8 @@ logs/
 *.iml
 *.ipr
 
+*.ini
+
 ### NetBeans ###
 /nbproject/private/
 /nbbuild/
