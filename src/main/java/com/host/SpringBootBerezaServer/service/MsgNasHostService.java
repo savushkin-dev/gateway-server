@@ -2,6 +2,7 @@ package com.host.SpringBootBerezaServer.service;
 
 import com.host.SpringBootBerezaServer.exceptions.XMLParsingException;
 import com.host.SpringBootBerezaServer.model.MsgNasHost;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import javax.xml.stream.XMLEventReader;
@@ -17,6 +18,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
+@Slf4j
 @Service
 public class MsgNasHostService {
 
@@ -66,8 +68,8 @@ public class MsgNasHostService {
                         case "RECIEVER" -> map.put("RECIEVER", validateTag(reader));
                     }
 
-                    if(startElement.getName().getLocalPart().equals(map.get("MSGTYPE")) &&
-                            !startElement.getName().getLocalPart().isEmpty() && lastTagRead.equals("RECIEVER")){
+                    if (startElement.getName().getLocalPart().equals(map.get("MSGTYPE")) &&
+                            !startElement.getName().getLocalPart().isEmpty() && lastTagRead.equals("RECIEVER")) {
                         containsMsgData = true;
                         break;
                     }
@@ -97,15 +99,14 @@ public class MsgNasHostService {
                 obj.setERRTEXT(obj.getERRTEXT() + textError.toString());
             }
 
-            if(!containsMsgData){
+            if (!containsMsgData) {
                 obj.setERRCODE(400);
-                obj.setERRTEXT(obj.getERRTEXT() + "Message data is empty; ");
+                obj.setERRTEXT(obj.getERRTEXT() + "Incorrect Message data; ");
             }
 
 
             obj = assignFields(obj, map);
             obj.setDATA(xml);
-
 
             return obj;
 
@@ -114,19 +115,21 @@ public class MsgNasHostService {
         }
     }
 
+
     private MsgNasHost assignFields(MsgNasHost obj, Map<String, String> map) {
+
         try {
             obj.setMSGID(map.get("MSGID"));
             obj.setMSGTYPE(map.get("MSGTYPE"));
             obj.setREPLYTO(map.get("REPLYTO"));
-            obj.setTIMESTAMP(LocalDateTime.parse(map.get("TIMESTAMP"), MsgNasHostService.DATE_FORMAT));
+            obj.setTIMESTAMP(map.get("TIMESTAMP"));
             obj.setFACILITY(map.get("FACILITY"));
             obj.setACTION(map.get("ACTION"));
             obj.setSENDER(map.get("SENDER"));
             obj.setRECEIVER(map.get("RECIEVER"));
             obj.setDT(LocalDateTime.now());
         } catch (Exception e) {
-//                obj.setERRCODE(400);
+            obj.setERRCODE(400);
             obj.setERRTEXT(obj.getERRTEXT() + "Not all fields are filled in correctly; ");
         }
         return obj;
@@ -141,8 +144,53 @@ public class MsgNasHostService {
         }
     }
 
-    public static DateTimeFormatter DATE_FORMAT = new DateTimeFormatterBuilder()
-            .appendPattern("yyyyMMddHHmmss")
-            .toFormatter();
+
+    public boolean testReqCheck(MsgNasHost msgNasHost) {
+        if (msgNasHost.getFACILITY().equalsIgnoreCase("TEST") ||
+                msgNasHost.getRECEIVER().equalsIgnoreCase("TEST")) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    public boolean testReqCheck(String xml) {
+
+        String FACILITY = "unknown";
+        String RECIEVER = "unknown";
+
+        try {
+            XMLInputFactory xmlInputFactory = XMLInputFactory.newInstance();
+            XMLEventReader reader = xmlInputFactory.createXMLEventReader(new StringReader(xml));
+
+            while (reader.hasNext()) {
+                XMLEvent nextEvent = reader.nextEvent();
+                if (nextEvent.isStartElement()) {
+                    StartElement startElement = nextEvent.asStartElement();
+
+                    switch (startElement.getName().getLocalPart()) {
+                        case "FACILITY" -> FACILITY = validateTag(reader);
+                        case "RECIEVER" -> RECIEVER = validateTag(reader);
+                    }
+                }
+
+                if (!FACILITY.equals("unknown") && !RECIEVER.equals("unknown")){
+                    break;
+                }
+
+            }
+        } catch (XMLStreamException e) {
+            log.error(e.toString());
+            throw new RuntimeException(e);
+        }
+
+        if (FACILITY.equalsIgnoreCase("TEST") ||
+                RECIEVER.equalsIgnoreCase("TEST")) {
+            return true;
+        } else {
+            return false;
+        }
+
+    }
 
 }
