@@ -3,7 +3,7 @@ package com.host.SpringBootBerezaServer.util;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
-public class N2HLogging {
+public class N2HTestLogging {
 
     public static void writeLogN2H(String request, long durParsing, long durDB, long durKafka) {
         log.info("\nDuration parsing+validation: " + durParsing + "\n"

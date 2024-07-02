@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration>
+
+    <!-- always a good activate OnConsoleStatusListener -->
+    <statusListener class="ch.qos.logback.core.status.OnConsoleStatusListener"/>
+
+    <property name="LOGS" value="/projects/brz_srv/logs"/>
+
+
+    <appender name="HostToNasFile" class="ch.qos.logback.core.FileAppender">
+        <file>${LOGS}/h2ntest.log</file>
+        <encoder>
+            <pattern>%d{ISO8601} %-5level %t %logger{36}: %msg%n%throwable</pattern>
+        </encoder>
+    </appender>
+
+    <appender name="NasToHostFile" class="ch.qos.logback.core.FileAppender">
+        <file>${LOGS}/n2htest.log</file>
+        <encoder>
+            <pattern>%d{ISO8601} %-5level %t %logger{36}: %msg%n%throwable</pattern>
+        </encoder>
+    </appender>
+
+
+    <!--    Логирование HostToNas-->
+    <logger name="com.host.SpringBootBerezaServer.util.H2NLogging" level="trace" additivity="false">
+        <appender-ref ref="HostToNasFile"/>
+    </logger>
+
+    <!--    Логирование NasToHost-->
+    <logger name="com.host.SpringBootBerezaServer.util.N2HLogging" level="trace" additivity="false">
+        <appender-ref ref="NasToHostFile"/>
+    </logger>
+
+    <logger name="com.host.SpringBootBerezaServer.util.H2NTestLogging" level="trace" additivity="false">
+        <appender-ref ref="HostToNasFile"/>
+    </logger>
+
+    <logger name="com.host.SpringBootBerezaServer.util.N2HTestLogging" level="trace" additivity="false">
+        <appender-ref ref="NasToHostFile"/>
+    </logger>
+
+</configuration>
