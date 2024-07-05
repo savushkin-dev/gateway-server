@@ -9,6 +9,7 @@ import com.host.SpringBootBerezaServer.repositories.NasHostTestRepository;
 import com.host.SpringBootBerezaServer.util.N2HLogging;
 import com.host.SpringBootBerezaServer.util.N2HTestLogging;
 import lombok.extern.slf4j.Slf4j;
+import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -19,33 +20,33 @@ import org.springframework.transaction.annotation.Transactional;
 public class Nas2HostService {
 
     private final Nas2HostRepository nas2HostRepository;
-
     private final NasHostTestRepository nasHostTestRepository;
-
     private final KafkaService kafkaService;
-
     private final MsgNasHostService msgNasHostService;
+    private final ModelMapper mapper;
+
 
     @Autowired
-    public Nas2HostService(Nas2HostRepository nas2HostRepository, NasHostTestRepository nasHostTestRepository, KafkaService kafkaService, MsgNasHostService msgNasHostService) {
+    public Nas2HostService(Nas2HostRepository nas2HostRepository, NasHostTestRepository nasHostTestRepository, KafkaService kafkaService, MsgNasHostService msgNasHostService, ModelMapper mapper) {
         this.nas2HostRepository = nas2HostRepository;
         this.nasHostTestRepository = nasHostTestRepository;
         this.kafkaService = kafkaService;
         this.msgNasHostService = msgNasHostService;
+        this.mapper = mapper;
     }
 
     @Transactional
-    public void save(MsgNasHost msgNasHost) {
-        if(msgNasHostService.testReqCheck(msgNasHost)){
-            nasHostTestRepository.save(msgNasHost.convertToNasHostTest());
+    public void save(MsgNasHost msgNasHost, boolean isTestReq) {
+        if(isTestReq){
+            nasHostTestRepository.save(mapper.map(msgNasHost, NasHostTest.class));
         } else {
-            nas2HostRepository.save(msgNasHost.convertToNat2Host());
+            nas2HostRepository.save(mapper.map(msgNasHost, Nas2Host.class));
         }
     }
 
 
-    public void sendToKafka(MsgNasHost msgNasHost, String xml) {
-        if(msgNasHostService.testReqCheck(msgNasHost)){
+    public void sendToKafka(String xml, boolean isTestReq) {
+        if(isTestReq){
             kafkaService.sendMessage(xml, "nhtest");
         } else {
             kafkaService.sendMessage(xml, "NasToHost");
@@ -58,7 +59,7 @@ public class Nas2HostService {
         long durDB = -1;
         long durKafka = -1;
 
-        boolean isTest = msgNasHostService.testReqCheck(requestXML);
+        boolean isTestReq = msgNasHostService.testReqCheck(requestXML);
 
         try {
             long startTimeParsing = System.nanoTime();
@@ -68,13 +69,13 @@ public class Nas2HostService {
 
 
             long startTimeDB = System.nanoTime();
-            save(msgNasHost);
+            save(msgNasHost, isTestReq);
             long endTimeDB = System.nanoTime();
             durDB = (endTimeDB - startTimeDB);
 
 
             long startTimeKafka = System.nanoTime();
-            sendToKafka(msgNasHost, requestXML);
+            sendToKafka(requestXML, isTestReq);
             long endTimeKafka = System.nanoTime();
             durKafka = (endTimeKafka - startTimeKafka);
 
@@ -84,7 +85,7 @@ public class Nas2HostService {
             }
 
 
-            if(isTest){
+            if(isTestReq){
                 N2HTestLogging.writeLogN2H(requestXML, durParsing, durDB, durKafka);
             } else {
                 N2HLogging.writeLogN2H(requestXML, durParsing, durDB, durKafka);
@@ -92,10 +93,10 @@ public class Nas2HostService {
 
         } catch (Exception ex) {
             log.error(ex.toString());
-            if(isTest){
-                N2HTestLogging.writeLogN2H(requestXML, durParsing, durDB, durKafka);
+            if(isTestReq){
+                N2HTestLogging.writeLogN2H(requestXML, ex.toString(), durParsing, durDB, durKafka);
             } else {
-                N2HLogging.writeLogN2H(requestXML, durParsing, durDB, durKafka);
+                N2HLogging.writeLogN2H(requestXML, ex.toString(), durParsing, durDB, durKafka);
             }
             throw ex;
         }
