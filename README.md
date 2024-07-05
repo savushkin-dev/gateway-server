@@ -8,10 +8,10 @@ title: Схема взаимодействия NAS - Savushkin
 ---
 
 %%{ init: {'theme': 'neutral'} }%%
- 
+
 classDiagram
     direction LR
-   
+
     class NAS_web_server{
         HostToNas()
     }
@@ -26,9 +26,9 @@ namespace Savushkin{
     class Реализация{
     }
 
-    class DB{
+    class DB["БД SQL Server naswms"]{
     }
-    
+
     class Kafka{
     }
 
@@ -86,4 +86,43 @@ style DB fill:#cdd3ca,stroke:#333,stroke-width:4px
 1) Проверка правильности заголовка;
 2) Сохранение в **БД**;
 3) Сохранение в **Kafka** + **ElasticSearch**;
-4) Возврат статуса ответа.    
+4) Возврат статуса ответа.
+
+## Справочник групп сообщений NS_GRNMSG
+
+| Код поля  | Наименование  | Тип       | Ключ  |
+| ---       | ---           | ---       | ---   |
+| KGR       | Код группы    | char(10)  | *     |
+| NAME      | Наименование  | char(50)  |       |
+
+## Справочник сообщений NS_NMSG
+
+| Код поля      | Наименование  | Тип       | Ключ  |
+| ---           | ---           | ---       | ---   |
+| KGR           | Код группы    | char(10)  |       |
+| KNM           | Код сообщения | char(20)  | *     |
+| MSGTYPE       | Наименование  | char(50)  |       |
+| DESCRIPTION   | Описание      | char(254) |       |
+
+## Справочник структур сообщений NS_NNODE
+
+| Код поля      | Наименование      | Тип       | Ключ  |
+| ---           | ---               | ---       | ---   |
+| KNM           | Код сообщения     | char(20)  | *     |
+| ORDER         | Порядковый номер  | integer   |       |
+| PARENT        | Родитель          | char(50)  |       |
+| NODE          | Узел              | char(50)  |       |
+| DESCRIPTION   | Наименование      | char(254) |       |
+| TYPE          | Тип данных        | char(20)  |       |
+| OBLIGATORY    | Обязательность    | char(10)  |       |
+
+## Справочник правил NS_NRULE
+
+| Код поля  | Наименование      | Тип       | Ключ  |
+| ---       | ---               | ---       | ---   |
+| KNM       | Код сообщения     | char(20)  | *     |
+| FACILITY  | Объект            | char(20)  |       |
+| ACTION    | Действие          | char(10)  |       |
+| SENDER    | Отправитель       | char(10)  |       |
+| RECEIVER  | Получатель        | char(10)  |       |
+| ROAMING   | Скрипт перевода   | Data      |       |
