@@ -12,8 +12,6 @@ import javax.xml.stream.events.StartElement;
 import javax.xml.stream.events.XMLEvent;
 import java.io.StringReader;
 import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
-import java.time.format.DateTimeFormatterBuilder;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
@@ -181,7 +179,6 @@ public class MsgNasHostService {
             }
         } catch (XMLStreamException e) {
             log.error(e.toString());
-            throw new RuntimeException(e);
         }
 
         if (FACILITY.equalsIgnoreCase("TEST") ||
@@ -192,5 +189,6 @@ public class MsgNasHostService {
         }
 
     }
+
 
 }

@@ -2,6 +2,8 @@ package com.host.SpringBootBerezaServer.service;
 
 import com.host.SpringBootBerezaServer.exceptions.NAS.NasRemoteServerException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.PropertySource;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
@@ -10,12 +12,17 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
 @Service
+@PropertySource("classpath:static/settings.ini")
 public class NasService {
 
-    private final String NAS_URL = "http://192.168.10.205:8082/api/hosttonas";
+    @Value("${nas_url}")
+    private String nasUrl;
 
-    private final String tokenNas = "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1bmlxdWVfbmFtZSI6IlNhdnVzaGtpbiIsIm5iZiI6MTcxMTcwNDE0MCwiZXhwIjozMjg5NTQ0NTQwLCJpYXQiOjE3MTE3MDc3NDAsImlzcyI6IkFQUyBkLm8uby4ifQ.8XkzdsBawFhAYrZ8FWVo0QbHmY6pgktvuPf7B_Rq-iI";
-    private final String tokenTest = "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJVc2VyIGRldGFpbHMiLCJ1c2VybmFtZSI6InNhdnVzaGtpbiIsImlhdCI6MTcxMzg3MjkzOCwiaXNzIjoiU3ByaW5nLUJlcmV6YS1TZXJ2ZXIiLCJleHAiOjE3NDU0MDg5Mzh9.maKaKK9maP2eUfSt0nXZlWAOBQOcLeb2lBj_5zHBl3I";
+    @Value("${nas_token}")
+    private String nasToken;
+
+    @Value("${test_token}")
+    private String testToken;
 
     private final RestTemplate restTemplate;
 
@@ -29,8 +36,8 @@ public class NasService {
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_XML);
 
-        headers.add("Authorization", tokenNas);
-//        headers.add("Authorization", tokenTest);
+        headers.add("Authorization", nasToken);
+//        headers.add("Authorization", testToken);
 
         HttpEntity<String> request = new HttpEntity<>(requestXML, headers);
 
@@ -38,7 +45,7 @@ public class NasService {
 
         try {
             ResponseEntity<String> response = restTemplate.postForEntity(
-                    NAS_URL,
+                    nasUrl,
 //                    "http://localhost:7592/api/hosttonasTest",
                     request, String.class);
             responseXML = response.getBody();
