@@ -1,6 +1,7 @@
 package com.host.SpringBootBerezaServer.service;
 
 import com.host.SpringBootBerezaServer.exceptions.NAS.NasRemoteServerException;
+import com.host.SpringBootBerezaServer.model.connections.Connection;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.PropertySource;
@@ -15,29 +16,25 @@ import org.springframework.web.client.RestTemplate;
 @PropertySource("classpath:static/settings.ini")
 public class NasService {
 
-    @Value("${nas_url}")
-    private String nasUrl;
-
-    @Value("${nas_token}")
-    private String nasToken;
-
-    @Value("${test_token}")
-    private String testToken;
 
     private final RestTemplate restTemplate;
+    private final DirectoryService directoryService;
 
     @Autowired
-    public NasService(RestTemplate restTemplate) {
+    public NasService(RestTemplate restTemplate, DirectoryService directoryService) {
         this.restTemplate = restTemplate;
+        this.directoryService = directoryService;
     }
 
     public String callNas(String requestXML) {
 
+        Connection connection = directoryService.getConnectionDataByKGR("NAS");
+
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_XML);
 
-        headers.add("Authorization", nasToken);
-//        headers.add("Authorization", testToken);
+
+        headers.add("Authorization", connection.getBearer());
 
         HttpEntity<String> request = new HttpEntity<>(requestXML, headers);
 
@@ -45,8 +42,7 @@ public class NasService {
 
         try {
             ResponseEntity<String> response = restTemplate.postForEntity(
-                    nasUrl,
-//                    "http://localhost:7592/api/hosttonasTest",
+                    connection.getUrl(),
                     request, String.class);
             responseXML = response.getBody();
         } catch (Exception e) {

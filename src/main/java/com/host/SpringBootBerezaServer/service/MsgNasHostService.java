@@ -181,8 +181,8 @@ public class MsgNasHostService {
             log.error(e.toString());
         }
 
-        if (FACILITY.equalsIgnoreCase("TEST") ||
-                RECIEVER.equalsIgnoreCase("TEST")) {
+        if (FACILITY.startsWith("TEST") ||
+                RECIEVER.startsWith("TEST")) {
             return true;
         } else {
             return false;
