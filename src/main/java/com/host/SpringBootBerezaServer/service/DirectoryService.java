@@ -6,12 +6,14 @@ import com.host.SpringBootBerezaServer.model.connections.Connection;
 import com.host.SpringBootBerezaServer.model.connections.NsGrNmsg;
 import com.host.SpringBootBerezaServer.repositories.GRNMSGRepository;
 import jakarta.annotation.PostConstruct;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.HashMap;
 import java.util.Map;
 
+@Slf4j
 @Service
 public class DirectoryService {
 
@@ -40,6 +42,7 @@ public class DirectoryService {
         try {
            return  objectMapper.readValue(obj.getConnection(), Connection.class);
         } catch (JsonProcessingException e) {
+            log.error("Ошибка сопоставления со справочником NS_GRNMSG!");
             throw new RuntimeException("Ошибка сопоставления со справочником NS_GRNMSG!");
         }
     }
