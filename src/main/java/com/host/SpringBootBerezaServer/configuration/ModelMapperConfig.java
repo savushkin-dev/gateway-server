@@ -12,7 +12,7 @@ public class ModelMapperConfig {
         ModelMapper mapper = new ModelMapper();
         mapper.getConfiguration()
                 .setFieldMatchingEnabled(true)
-                .setFullTypeMatchingRequired(true);
+                .setFullTypeMatchingRequired(true); /* полное соотвествие типам */
         return mapper;
     }
 }

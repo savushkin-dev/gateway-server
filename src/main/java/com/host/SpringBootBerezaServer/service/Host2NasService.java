@@ -3,6 +3,7 @@ package com.host.SpringBootBerezaServer.service;
 import com.host.SpringBootBerezaServer.exceptions.NAS.NasException;
 import com.host.SpringBootBerezaServer.model.Host2Nas;
 import com.host.SpringBootBerezaServer.model.MsgNasHost;
+import com.host.SpringBootBerezaServer.model.Nas2Host;
 import com.host.SpringBootBerezaServer.model.NasHostTest;
 import com.host.SpringBootBerezaServer.repositories.Host2NasRepository;
 import com.host.SpringBootBerezaServer.repositories.NasHostTestRepository;
@@ -41,9 +42,10 @@ public class Host2NasService {
     @Transactional
     public void save(MsgNasHost msgNasHost, boolean isTestReq) {
         if(isTestReq){
-            nasHostTestRepository.save(mapper.map(msgNasHost, NasHostTest.class));
+            NasHostTest nasHostTest = NasHostTest.convertFromMsgNasHost(msgNasHost);
+            nasHostTestRepository.save(nasHostTest);
         } else {
-            host2NasRepository.save(mapper.map(msgNasHost, Host2Nas.class));
+            host2NasRepository.save(Host2Nas.convertFromMsgNasHost(msgNasHost));
         }
     }
 
