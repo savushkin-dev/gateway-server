@@ -20,6 +20,9 @@
         <encoder>
             <pattern>%d{ISO8601} %-5level %t %logger{36}: %msg%n%throwable</pattern>
         </encoder>
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <fileNamePattern>${LOGS}/archived/logger-SPRING-%d{yyyy-MM-dd}.log</fileNamePattern>
+        </rollingPolicy>
     </appender>
 
     <appender name="WEBFile" class="ch.qos.logback.core.FileAppender">
@@ -27,6 +30,9 @@
         <encoder>
             <pattern>%d{ISO8601} %-5level %t %logger{36}: %msg%n%throwable</pattern>
         </encoder>
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <fileNamePattern>${LOGS}/archived/logger-WEB-%d{yyyy-MM-dd}.log</fileNamePattern>
+        </rollingPolicy>
     </appender>
 
     <appender name="DBFile" class="ch.qos.logback.core.FileAppender">
@@ -34,6 +40,9 @@
         <encoder>
             <pattern>%d{ISO8601} %-5level %t %logger{36}: %msg%n%throwable</pattern>
         </encoder>
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <fileNamePattern>${LOGS}/archived/logger-DB-%d{yyyy-MM-dd}.log</fileNamePattern>
+        </rollingPolicy>
     </appender>
 
     <appender name="KAFKAFile" class="ch.qos.logback.core.FileAppender">
@@ -41,6 +50,9 @@
         <encoder>
             <pattern>%d{ISO8601} %-5level %t %logger{36}: %msg%n%throwable</pattern>
         </encoder>
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <fileNamePattern>${LOGS}/archived/logger-KAFKA-%d{yyyy-MM-dd}.log</fileNamePattern>
+        </rollingPolicy>
     </appender>
 
     <appender name="HostToNasFile" class="ch.qos.logback.core.FileAppender">

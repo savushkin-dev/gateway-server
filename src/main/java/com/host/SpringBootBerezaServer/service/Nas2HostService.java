@@ -38,9 +38,9 @@ public class Nas2HostService {
     @Transactional
     public void save(MsgNasHost msgNasHost, boolean isTestReq) {
         if(isTestReq){
-            nasHostTestRepository.save(mapper.map(msgNasHost, NasHostTest.class));
+            nasHostTestRepository.save(NasHostTest.convertFromMsgNasHost(msgNasHost));
         } else {
-            nas2HostRepository.save(mapper.map(msgNasHost, Nas2Host.class));
+            nas2HostRepository.save(Nas2Host.convertFromMsgNasHost(msgNasHost));
         }
     }
 
