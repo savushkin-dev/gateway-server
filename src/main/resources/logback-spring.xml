@@ -4,7 +4,7 @@
     <!-- always a good activate OnConsoleStatusListener -->
     <statusListener class="ch.qos.logback.core.status.OnConsoleStatusListener" />
 
-    <property name="LOGS" value="/projects/brz_srv/logs" />
+    <property name="LOGS" value="/gateway/logs" />
 
     <appender name="Console"
               class="ch.qos.logback.core.ConsoleAppender">
@@ -20,6 +20,9 @@
         <encoder>
             <pattern>%d{ISO8601} %-5level %t %logger{36}: %msg%n%throwable</pattern>
         </encoder>
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <fileNamePattern>${LOGS}/archived/logger-SPRING-%d{yyyy-MM-dd}.log</fileNamePattern>
+        </rollingPolicy>
     </appender>
 
     <appender name="WEBFile" class="ch.qos.logback.core.FileAppender">
@@ -27,6 +30,9 @@
         <encoder>
             <pattern>%d{ISO8601} %-5level %t %logger{36}: %msg%n%throwable</pattern>
         </encoder>
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <fileNamePattern>${LOGS}/archived/logger-WEB-%d{yyyy-MM-dd}.log</fileNamePattern>
+        </rollingPolicy>
     </appender>
 
     <appender name="DBFile" class="ch.qos.logback.core.FileAppender">
@@ -34,10 +40,45 @@
         <encoder>
             <pattern>%d{ISO8601} %-5level %t %logger{36}: %msg%n%throwable</pattern>
         </encoder>
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <fileNamePattern>${LOGS}/archived/logger-DB-%d{yyyy-MM-dd}.log</fileNamePattern>
+        </rollingPolicy>
     </appender>
 
     <appender name="KAFKAFile" class="ch.qos.logback.core.FileAppender">
         <file>${LOGS}/logger-KAFKA.log</file>
+        <encoder>
+            <pattern>%d{ISO8601} %-5level %t %logger{36}: %msg%n%throwable</pattern>
+        </encoder>
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <fileNamePattern>${LOGS}/archived/logger-KAFKA-%d{yyyy-MM-dd}.log</fileNamePattern>
+        </rollingPolicy>
+    </appender>
+
+    <appender name="HostToNasFile" class="ch.qos.logback.core.FileAppender">
+        <file>${LOGS}/HostToNas.log</file>
+        <encoder>
+            <pattern>%d{ISO8601} %-5level %t %logger{36}: %msg%n%throwable</pattern>
+        </encoder>
+    </appender>
+
+    <appender name="NasToHostFile" class="ch.qos.logback.core.FileAppender">
+        <file>${LOGS}/NasToHost.log</file>
+        <encoder>
+            <pattern>%d{ISO8601} %-5level %t %logger{36}: %msg%n%throwable</pattern>
+        </encoder>
+    </appender>
+
+
+    <appender name="HostToNasTestFile" class="ch.qos.logback.core.FileAppender">
+        <file>${LOGS}/h2ntest.log</file>
+        <encoder>
+            <pattern>%d{ISO8601} %-5level %t %logger{36}: %msg%n%throwable</pattern>
+        </encoder>
+    </appender>
+
+    <appender name="NasToHostTestFile" class="ch.qos.logback.core.FileAppender">
+        <file>${LOGS}/n2htest.log</file>
         <encoder>
             <pattern>%d{ISO8601} %-5level %t %logger{36}: %msg%n%throwable</pattern>
         </encoder>

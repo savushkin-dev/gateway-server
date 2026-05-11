@@ -21,16 +21,14 @@ public class Nas2HostService {
 
     private final Nas2HostRepository nas2HostRepository;
     private final NasHostTestRepository nasHostTestRepository;
-    private final KafkaService kafkaService;
     private final MsgNasHostService msgNasHostService;
     private final ModelMapper mapper;
 
 
     @Autowired
-    public Nas2HostService(Nas2HostRepository nas2HostRepository, NasHostTestRepository nasHostTestRepository, KafkaService kafkaService, MsgNasHostService msgNasHostService, ModelMapper mapper) {
+    public Nas2HostService(Nas2HostRepository nas2HostRepository, NasHostTestRepository nasHostTestRepository, MsgNasHostService msgNasHostService, ModelMapper mapper) {
         this.nas2HostRepository = nas2HostRepository;
         this.nasHostTestRepository = nasHostTestRepository;
-        this.kafkaService = kafkaService;
         this.msgNasHostService = msgNasHostService;
         this.mapper = mapper;
     }
@@ -38,18 +36,9 @@ public class Nas2HostService {
     @Transactional
     public void save(MsgNasHost msgNasHost, boolean isTestReq) {
         if(isTestReq){
-            nasHostTestRepository.save(mapper.map(msgNasHost, NasHostTest.class));
+            nasHostTestRepository.save(NasHostTest.convertFromMsgNasHost(msgNasHost));
         } else {
-            nas2HostRepository.save(mapper.map(msgNasHost, Nas2Host.class));
-        }
-    }
-
-
-    public void sendToKafka(String xml, boolean isTestReq) {
-        if(isTestReq){
-            kafkaService.sendMessage(xml, "nhtest");
-        } else {
-            kafkaService.sendMessage(xml, "NasToHost");
+            nas2HostRepository.save(Nas2Host.convertFromMsgNasHost(msgNasHost));
         }
     }
 
@@ -72,12 +61,6 @@ public class Nas2HostService {
             save(msgNasHost, isTestReq);
             long endTimeDB = System.nanoTime();
             durDB = (endTimeDB - startTimeDB);
-
-
-            long startTimeKafka = System.nanoTime();
-            sendToKafka(requestXML, isTestReq);
-            long endTimeKafka = System.nanoTime();
-            durKafka = (endTimeKafka - startTimeKafka);
 
 
             if (msgNasHost.getERRCODE() != 0) {

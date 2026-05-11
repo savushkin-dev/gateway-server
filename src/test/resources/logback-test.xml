@@ -4,8 +4,7 @@
     <!-- always a good activate OnConsoleStatusListener -->
     <statusListener class="ch.qos.logback.core.status.OnConsoleStatusListener"/>
 
-    <property name="LOGS" value="/projects/brz_srv/logs"/>
-
+    <property name="LOGS" value="/gateway/logs"/>
 
     <appender name="HostToNasFile" class="ch.qos.logback.core.FileAppender">
         <file>${LOGS}/h2ntest.log</file>

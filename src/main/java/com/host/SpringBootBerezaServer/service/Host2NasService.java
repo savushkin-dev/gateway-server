@@ -3,6 +3,7 @@ package com.host.SpringBootBerezaServer.service;
 import com.host.SpringBootBerezaServer.exceptions.NAS.NasException;
 import com.host.SpringBootBerezaServer.model.Host2Nas;
 import com.host.SpringBootBerezaServer.model.MsgNasHost;
+import com.host.SpringBootBerezaServer.model.Nas2Host;
 import com.host.SpringBootBerezaServer.model.NasHostTest;
 import com.host.SpringBootBerezaServer.repositories.Host2NasRepository;
 import com.host.SpringBootBerezaServer.repositories.NasHostTestRepository;
@@ -21,17 +22,15 @@ public class Host2NasService {
 
     private final Host2NasRepository host2NasRepository;
     private final NasHostTestRepository nasHostTestRepository;
-    private final KafkaService kafkaService;
     private final MsgNasHostService msgNasHostService;
     private final NasService nasService;
     private final ModelMapper mapper;
 
 
     @Autowired
-    public Host2NasService(Host2NasRepository host2NasRepository, NasHostTestRepository nasHostTestRepository, KafkaService kafkaService, MsgNasHostService msgNasHostService, NasService nasService, ModelMapper mapper) {
+    public Host2NasService(Host2NasRepository host2NasRepository, NasHostTestRepository nasHostTestRepository, MsgNasHostService msgNasHostService, NasService nasService, ModelMapper mapper) {
         this.host2NasRepository = host2NasRepository;
         this.nasHostTestRepository = nasHostTestRepository;
-        this.kafkaService = kafkaService;
         this.msgNasHostService = msgNasHostService;
         this.nasService = nasService;
         this.mapper = mapper;
@@ -41,20 +40,12 @@ public class Host2NasService {
     @Transactional
     public void save(MsgNasHost msgNasHost, boolean isTestReq) {
         if(isTestReq){
-            nasHostTestRepository.save(mapper.map(msgNasHost, NasHostTest.class));
+            NasHostTest nasHostTest = NasHostTest.convertFromMsgNasHost(msgNasHost);
+            nasHostTestRepository.save(nasHostTest);
         } else {
-            host2NasRepository.save(mapper.map(msgNasHost, Host2Nas.class));
+            host2NasRepository.save(Host2Nas.convertFromMsgNasHost(msgNasHost));
         }
     }
-
-    public void sendToKafka(String xml, boolean isTestReq) {
-        if(isTestReq){
-            kafkaService.sendMessage(xml, "nhtest");
-        } else {
-            kafkaService.sendMessage(xml, "HostToNas");
-        }
-    }
-
 
     @Transactional(noRollbackFor = RuntimeException.class)
     public String sendAndSave(String requestXML) {
@@ -77,13 +68,6 @@ public class Host2NasService {
             save(msgNasHost, isTestReq);
             long endTimeDB = System.nanoTime();
             durDB = (endTimeDB - startTimeDB);
-
-
-            long startTimeKafka = System.nanoTime();
-            sendToKafka(requestXML, isTestReq);
-            long endTimeKafka = System.nanoTime();
-            durKafka = (endTimeKafka - startTimeKafka);
-
 
             if(isTestReq){
                 responseXML = "-";
@@ -115,7 +99,5 @@ public class Host2NasService {
             throw ex;
         }
     }
-
-
 
 }

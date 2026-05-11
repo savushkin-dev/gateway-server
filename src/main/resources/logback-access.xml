@@ -2,7 +2,7 @@
 <configuration>
 
 <!--    <property name="LOGS" value="./logs"/>-->
-    <property name="LOGS" value="/projects/brz_srv/logs" />
+    <property name="LOGS" value="/gateway/logs" />
 
     <appender name="Console" class="ch.qos.logback.core.ConsoleAppender">
         <encoder class="ch.qos.logback.access.PatternLayoutEncoder">
