@@ -53,7 +53,6 @@
 			<version>23.1.0</version>
 		</dependency>
 
-
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-security</artifactId>
@@ -92,14 +91,12 @@
 			<version>12.6.1.jre11</version>
 		</dependency>
 
-
 		<!-- https://mvnrepository.com/artifact/com.fasterxml.jackson.dataformat/jackson-dataformat-xml -->
 		<dependency>
 			<groupId>com.fasterxml.jackson.dataformat</groupId>
 			<artifactId>jackson-dataformat-xml</artifactId>
 			<version>2.15.2</version>
 		</dependency>
-
 
 		<dependency>
 			<groupId>org.springframework.kafka</groupId>
@@ -113,16 +110,24 @@
 			<version>2.16.2</version>
 		</dependency>
 
-
 		<dependency>
 			<groupId>com.h2database</groupId>
 			<artifactId>h2</artifactId>
 			<scope>runtime</scope>
 		</dependency>
+
 		<dependency>
 			<groupId>junit</groupId>
 			<artifactId>junit</artifactId>
 			<scope>test</scope>
+		</dependency>
+
+		<!-- Source: https://mvnrepository.com/artifact/io.github.cdimascio/dotenv-java -->
+		<dependency>
+			<groupId>io.github.cdimascio</groupId>
+			<artifactId>dotenv-java</artifactId>
+			<version>3.2.0</version>
+			<scope>compile</scope>
 		</dependency>
 
 
