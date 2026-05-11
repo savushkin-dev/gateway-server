@@ -23,6 +23,8 @@ logs/
 
 *.ini
 
+*.ini
+
 ### NetBeans ###
 /nbproject/private/
 /nbbuild/

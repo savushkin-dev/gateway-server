@@ -34,5 +34,4 @@ public class Host2Nas extends MsgNasHost {
 
         return obj;
     }
-
 }

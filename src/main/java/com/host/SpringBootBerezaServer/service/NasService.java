@@ -16,7 +16,6 @@ import org.springframework.web.client.RestTemplate;
 @PropertySource("classpath:static/settings.ini")
 public class NasService {
 
-
     private final RestTemplate restTemplate;
     private final DirectoryService directoryService;
 

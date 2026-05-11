@@ -84,6 +84,35 @@
         </encoder>
     </appender>
 
+    <appender name="HostToNasFile" class="ch.qos.logback.core.FileAppender">
+        <file>${LOGS}/HostToNas.log</file>
+        <encoder>
+            <pattern>%d{ISO8601} %-5level %t %logger{36}: %msg%n%throwable</pattern>
+        </encoder>
+    </appender>
+
+    <appender name="NasToHostFile" class="ch.qos.logback.core.FileAppender">
+        <file>${LOGS}/NasToHost.log</file>
+        <encoder>
+            <pattern>%d{ISO8601} %-5level %t %logger{36}: %msg%n%throwable</pattern>
+        </encoder>
+    </appender>
+
+
+    <appender name="HostToNasTestFile" class="ch.qos.logback.core.FileAppender">
+        <file>${LOGS}/h2ntest.log</file>
+        <encoder>
+            <pattern>%d{ISO8601} %-5level %t %logger{36}: %msg%n%throwable</pattern>
+        </encoder>
+    </appender>
+
+    <appender name="NasToHostTestFile" class="ch.qos.logback.core.FileAppender">
+        <file>${LOGS}/n2htest.log</file>
+        <encoder>
+            <pattern>%d{ISO8601} %-5level %t %logger{36}: %msg%n%throwable</pattern>
+        </encoder>
+    </appender>
+
 
     <!-- LOG everything at INFO level -->
     <root level="info">
