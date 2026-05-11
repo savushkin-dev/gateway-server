@@ -1,6 +1,7 @@
 package com.host.SpringBootBerezaServer.controller;
 
 import com.host.SpringBootBerezaServer.SpringBootBerezaServerApplication;
+import com.host.SpringBootBerezaServer.configuration.TestSecurityConfig;
 import com.host.SpringBootBerezaServer.service.*;
 import org.junit.jupiter.api.Test;
 import org.junit.runner.RunWith;
@@ -8,6 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.context.annotation.Import;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit4.SpringRunner;
@@ -24,9 +26,8 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @AutoConfigureMockMvc
 @TestPropertySource(
         locations = "classpath:application-test.properties")
+@Import(TestSecurityConfig.class)
 class NasControllerIntegrationTest {
-
-    private final String TEST_TOKEN = "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJVc2VyIGRldGFpbHMiLCJ1c2VybmFtZSI6InRlc3RBY2NvdW50IiwiaWF0IjoxNzE2NzE4NDUyLCJpc3MiOiJTcHJpbmctQmVyZXphLVNlcnZlciIsImV4cCI6MTc0ODI1NDQ1Mn0._6ngENuAIbPKVx1s3xN3oJfHUHbO3VH9WTGNDPN1vh0";
 
     @Autowired
     private MockMvc mvc;
@@ -62,7 +63,6 @@ class NasControllerIntegrationTest {
 
         this.mvc.perform(post("/api/nastohost")
                         .accept(MediaType.APPLICATION_XML)
-                        .header("Authorization", TEST_TOKEN)
                         .content(inputParam))
                 .andExpect(content().xml(expResponse))
                 .andExpect(status().isOk());
@@ -93,7 +93,6 @@ class NasControllerIntegrationTest {
 
         this.mvc.perform(post("/api/nastohost")
                         .accept(MediaType.APPLICATION_XML)
-                        .header("Authorization", TEST_TOKEN)
                         .content(inputParam))
                 .andExpect(status().isBadRequest())
                 .andExpect(content().xml(expResponse));
@@ -124,7 +123,6 @@ class NasControllerIntegrationTest {
 
         this.mvc.perform(post("/api/nastohost")
                         .accept(MediaType.APPLICATION_XML)
-                        .header("Authorization", TEST_TOKEN)
                         .content(inputParam))
                 .andExpect(status().isBadRequest())
                 .andExpect(content().xml(expResponse));
@@ -155,7 +153,6 @@ class NasControllerIntegrationTest {
 
         this.mvc.perform(post("/api/nastohost")
                         .accept(MediaType.APPLICATION_XML)
-                        .header("Authorization", TEST_TOKEN)
                         .content(inputParam))
                 .andExpect(status().isBadRequest())
                 .andExpect(content().xml(expResponse));
@@ -186,7 +183,6 @@ class NasControllerIntegrationTest {
 
         this.mvc.perform(post("/api/nastohost")
                         .accept(MediaType.APPLICATION_XML)
-                        .header("Authorization", TEST_TOKEN)
                         .content(inputParam))
                 .andExpect(status().isBadRequest())
                 .andExpect(content().xml(expResponse));
@@ -217,7 +213,6 @@ class NasControllerIntegrationTest {
 
         this.mvc.perform(post("/api/nastohost")
                         .accept(MediaType.APPLICATION_XML)
-                        .header("Authorization", TEST_TOKEN)
                         .content(inputParam))
                 .andExpect(status().isBadRequest())
                 .andExpect(content().xml(expResponse));
@@ -248,7 +243,6 @@ class NasControllerIntegrationTest {
 
         this.mvc.perform(post("/api/nastohost")
                         .accept(MediaType.APPLICATION_XML)
-                        .header("Authorization", TEST_TOKEN)
                         .content(inputParam))
                 .andExpect(status().isBadRequest())
                 .andExpect(content().xml(expResponse));
@@ -279,7 +273,6 @@ class NasControllerIntegrationTest {
 
         this.mvc.perform(post("/api/nastohost")
                         .accept(MediaType.APPLICATION_XML)
-                        .header("Authorization", TEST_TOKEN)
                         .content(inputParam))
                 .andExpect(status().isBadRequest())
                 .andExpect(content().xml(expResponse));
@@ -307,7 +300,6 @@ class NasControllerIntegrationTest {
 
         this.mvc.perform(post("/api/hosttonas")
                         .accept(MediaType.APPLICATION_XML)
-                        .header("Authorization", TEST_TOKEN)
                         .content(reqBody))
                 .andExpect(status().isOk());
     }
@@ -339,7 +331,6 @@ class NasControllerIntegrationTest {
 
         this.mvc.perform(post("/api/hosttonas")
                         .accept(MediaType.APPLICATION_XML)
-                        .header("Authorization", TEST_TOKEN)
                         .content(reqBody))
                 .andExpect(content().string(expResponse))
                 .andExpect(status().isBadRequest());
@@ -372,7 +363,6 @@ class NasControllerIntegrationTest {
 
         this.mvc.perform(post("/api/hosttonas")
                         .accept(MediaType.APPLICATION_XML)
-                        .header("Authorization", TEST_TOKEN)
                         .content(reqBody))
                 .andExpect(content().string(expResponse))
                 .andExpect(status().isBadRequest());
@@ -405,7 +395,6 @@ class NasControllerIntegrationTest {
 
         this.mvc.perform(post("/api/hosttonas")
                         .accept(MediaType.APPLICATION_XML)
-                        .header("Authorization", TEST_TOKEN)
                         .content(reqBody))
                 .andExpect(content().string(expResponse))
                 .andExpect(status().isBadRequest());
@@ -438,7 +427,6 @@ class NasControllerIntegrationTest {
 
         this.mvc.perform(post("/api/hosttonas")
                         .accept(MediaType.APPLICATION_XML)
-                        .header("Authorization", TEST_TOKEN)
                         .content(reqBody))
                 .andExpect(content().string(expResponse))
                 .andExpect(status().isBadRequest());
@@ -471,7 +459,6 @@ class NasControllerIntegrationTest {
 
         this.mvc.perform(post("/api/hosttonas")
                         .accept(MediaType.APPLICATION_XML)
-                        .header("Authorization", TEST_TOKEN)
                         .content(reqBody))
                 .andExpect(content().string(expResponse))
                 .andExpect(status().isBadRequest());
@@ -504,7 +491,6 @@ class NasControllerIntegrationTest {
 
         this.mvc.perform(post("/api/hosttonas")
                         .accept(MediaType.APPLICATION_XML)
-                        .header("Authorization", TEST_TOKEN)
                         .content(reqBody))
                 .andExpect(content().string(expResponse))
                 .andExpect(status().isBadRequest());
@@ -537,7 +523,6 @@ class NasControllerIntegrationTest {
 
         this.mvc.perform(post("/api/hosttonas")
                         .accept(MediaType.APPLICATION_XML)
-                        .header("Authorization", TEST_TOKEN)
                         .content(reqBody))
                 .andExpect(content().string(expResponse))
                 .andExpect(status().isBadRequest());
