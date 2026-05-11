@@ -5,6 +5,10 @@ target/
 !**/src/test/**/target/
 logs/
 
+# Environment variables
+.env
+!.env.example
+
 ### STS ###
 .apt_generated
 .classpath
@@ -40,7 +44,3 @@ build/
 
 /logHost2NAS
 /logNAS2Host
-
-# Environment variables
-.env
-!.env.example
