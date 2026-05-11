@@ -13,7 +13,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
 @Service
-@PropertySource("classpath:static/settings.ini")
 public class NasService {
 
 

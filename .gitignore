@@ -38,3 +38,7 @@ build/
 
 /logHost2NAS
 /logNAS2Host
+
+# Environment variables
+.env
+!.env.example
