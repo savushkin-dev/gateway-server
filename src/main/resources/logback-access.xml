@@ -1,8 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <configuration>
 
-<!--    <property name="LOGS" value="./logs"/>-->
-    <property name="LOGS" value="/gateway/logs" />
+    <springProperty name="LOGS" source="logs.dir" defaultValue="/gateway/logs"/>
 
     <appender name="Console" class="ch.qos.logback.core.ConsoleAppender">
         <encoder class="ch.qos.logback.access.PatternLayoutEncoder">
@@ -22,8 +21,6 @@
             <fileNamePattern>${LOGS}/archived/logger-Tomcat.%d{yyyy-MM-dd}.log</fileNamePattern>
         </rollingPolicy>
 
-
     </appender>
-<!--    <appender-ref ref="Console"/>-->
     <appender-ref ref="TomcatFile"/>
 </configuration>
