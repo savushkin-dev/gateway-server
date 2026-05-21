@@ -2,6 +2,7 @@
 <configuration>
 
     <springProperty name="LOGS" source="logs.dir" defaultValue="/gateway/logs"/>
+    <property name="LOGS" value="${LOGS_PATH:-/gateway/logs}" />
 
     <appender name="Console" class="ch.qos.logback.core.ConsoleAppender">
         <encoder class="ch.qos.logback.access.PatternLayoutEncoder">
