@@ -4,7 +4,7 @@
     <!-- always a good activate OnConsoleStatusListener -->
     <statusListener class="ch.qos.logback.core.status.OnConsoleStatusListener" />
 
-    <property name="LOGS" value="/gateway/logs" />
+    <springProperty name="LOGS" source="logs.dir" defaultValue="/gateway/logs"/>
 
     <appender name="Console"
               class="ch.qos.logback.core.ConsoleAppender">
@@ -69,36 +69,6 @@
         </encoder>
     </appender>
 
-
-    <appender name="HostToNasTestFile" class="ch.qos.logback.core.FileAppender">
-        <file>${LOGS}/h2ntest.log</file>
-        <encoder>
-            <pattern>%d{ISO8601} %-5level %t %logger{36}: %msg%n%throwable</pattern>
-        </encoder>
-    </appender>
-
-    <appender name="NasToHostTestFile" class="ch.qos.logback.core.FileAppender">
-        <file>${LOGS}/n2htest.log</file>
-        <encoder>
-            <pattern>%d{ISO8601} %-5level %t %logger{36}: %msg%n%throwable</pattern>
-        </encoder>
-    </appender>
-
-    <appender name="HostToNasFile" class="ch.qos.logback.core.FileAppender">
-        <file>${LOGS}/HostToNas.log</file>
-        <encoder>
-            <pattern>%d{ISO8601} %-5level %t %logger{36}: %msg%n%throwable</pattern>
-        </encoder>
-    </appender>
-
-    <appender name="NasToHostFile" class="ch.qos.logback.core.FileAppender">
-        <file>${LOGS}/NasToHost.log</file>
-        <encoder>
-            <pattern>%d{ISO8601} %-5level %t %logger{36}: %msg%n%throwable</pattern>
-        </encoder>
-    </appender>
-
-
     <appender name="HostToNasTestFile" class="ch.qos.logback.core.FileAppender">
         <file>${LOGS}/h2ntest.log</file>
         <encoder>
@@ -120,10 +90,7 @@
         <appender-ref ref="APPFile" />
     </root>
 
-
-
     <!-- org.springframework.web -->
-
     <logger name="org.springframework.web" level="debug" additivity="false">
         <appender-ref ref="WEBFile" />
         <!--        <appender-ref ref="Console" />-->
@@ -135,8 +102,6 @@
         <appender-ref ref="DBFile" />
 <!--        <appender-ref ref="Console" />-->
     </logger>
-
-
 
 
     <logger name="org.springframework.kafka" level="debug" additivity="false">
